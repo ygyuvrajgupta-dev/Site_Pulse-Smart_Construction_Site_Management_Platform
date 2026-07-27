@@ -67,6 +67,17 @@ const env = {
   // API
   apiPrefix: process.env.API_PREFIX || "/api",
   apiVersion: process.env.API_VERSION || "v1",
+
+  // Email
+  emailHost: process.env.EMAIL_HOST || "smtp.gmail.com",
+  emailPort: parseInt(process.env.EMAIL_PORT || "587", 10),
+  emailSecure: process.env.EMAIL_SECURE === "true",
+  emailUser: process.env.EMAIL_USER,
+  emailPass: process.env.EMAIL_PASS,
+  emailFrom: process.env.EMAIL_FROM || "noreply@sitepulse.com",
+
+  // Frontend
+  frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
 };
 
 export default env;

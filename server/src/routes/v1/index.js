@@ -7,6 +7,7 @@ import leadRoutes from "./lead.routes.js";
 import clientRoutes from "./client.routes.js";
 import employeeRoutes from "./employee.routes.js";
 import notificationRoutes from "./notification.routes.js";
+import { protect } from "../middleware/auth.middleware.js";
 
 /**
  * API v1 route aggregator.
@@ -14,27 +15,27 @@ import notificationRoutes from "./notification.routes.js";
  * Each route file exports a Router with its own endpoints.
  *
  * Route structure:
- *   /api/v1/auth/*          → authRoutes
- *   /api/v1/users/*         → userRoutes
- *   /api/v1/companies/*     → companyRoutes
- *   /api/v1/projects/*      → projectRoutes
- *   /api/v1/leads/*         → leadRoutes
- *   /api/v1/clients/*       → clientRoutes
- *   /api/v1/employees/*     → employeeRoutes
- *   /api/v1/notifications/* → notificationRoutes
+ *   /api/v1/auth/*          → authRoutes (public)
+ *   /api/v1/users/*         → userRoutes (protected)
+ *   /api/v1/companies/*     → companyRoutes (protected)
+ *   /api/v1/projects/*      → projectRoutes (protected)
+ *   /api/v1/leads/*         → leadRoutes (protected)
+ *   /api/v1/clients/*       → clientRoutes (protected)
+ *   /api/v1/employees/*     → employeeRoutes (protected)
+ *   /api/v1/notifications/* → notificationRoutes (protected)
  */
 const router = Router();
 
 // Authentication routes (no auth required)
 router.use("/auth", authRoutes);
 
-// Protected routes (auth middleware will be added later)
-router.use("/users", userRoutes);
-router.use("/companies", companyRoutes);
-router.use("/projects", projectRoutes);
-router.use("/leads", leadRoutes);
-router.use("/clients", clientRoutes);
-router.use("/employees", employeeRoutes);
-router.use("/notifications", notificationRoutes);
+// Protected routes - require authentication
+router.use("/users", protect, userRoutes);
+router.use("/companies", protect, companyRoutes);
+router.use("/projects", protect, projectRoutes);
+router.use("/leads", protect, leadRoutes);
+router.use("/clients", protect, clientRoutes);
+router.use("/employees", protect, employeeRoutes);
+router.use("/notifications", protect, notificationRoutes);
 
 export default router;

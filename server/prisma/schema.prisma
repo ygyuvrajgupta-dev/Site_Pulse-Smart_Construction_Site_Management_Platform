@@ -312,6 +312,8 @@ model User {
   emailVerified   Boolean     @default(false)
   lastLoginAt     DateTime?
   preferences     Json?
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 
