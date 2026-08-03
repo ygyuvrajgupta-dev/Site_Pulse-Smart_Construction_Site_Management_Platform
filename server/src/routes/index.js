@@ -3,6 +3,7 @@ import env from "../config/env.js";
 import v1Routes from "./v1/index.js";
 import platformRoutes from "./platform.routes.js";
 import companyAdminRoutes from "./company-admin.routes.js";
+import crmRoutes from "./crm.routes.js";
 
 /**
  * API route aggregator.
@@ -27,6 +28,9 @@ router.use(`/${env.apiVersion}/platform`, platformRoutes);
 
 // Mount company admin routes (company admin/owner only)
 router.use(`/${env.apiVersion}/company`, companyAdminRoutes);
+
+// Mount CRM routes
+router.use(`/${env.apiVersion}/crm`, crmRoutes);
 
 // Health check endpoint (no version required)
 router.get("/health", (req, res) => {

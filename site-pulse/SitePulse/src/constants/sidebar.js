@@ -14,6 +14,9 @@ import {
   FiTag,
   FiBarChart2,
   FiBuilding,
+  FiCalendar,
+  FiClock,
+  FiTrello,
 } from 'react-icons/fi';
 import { ROUTES } from './routes';
 
@@ -25,9 +28,12 @@ import { ROUTES } from './routes';
 // Main Dashboard sidebar items
 export const DASHBOARD_SIDEBAR = [
   { path: ROUTES.DASHBOARD, icon: FiHome, label: 'Dashboard' },
-  { path: ROUTES.COMPANIES, icon: FiBuilding, label: 'Companies' },
+  { path: ROUTES.CRM_PIPELINE, icon: FiTrello, label: 'Pipeline' },
+  { path: ROUTES.CRM_LEADS, icon: FiTrendingUp, label: 'Leads' },
+  { path: ROUTES.CRM_CLIENTS, icon: FiUsers, label: 'Clients' },
+  { path: ROUTES.CRM_MEETINGS, icon: FiCalendar, label: 'Meetings' },
+  { path: ROUTES.CRM_FOLLOWUPS, icon: FiClock, label: 'Follow Ups' },
   { path: ROUTES.PROJECTS, icon: FiBriefcase, label: 'Projects' },
-  { path: ROUTES.LEADS, icon: FiTrendingUp, label: 'Leads' },
   { path: ROUTES.SETTINGS, icon: FiSettings, label: 'Settings' },
 ];
 

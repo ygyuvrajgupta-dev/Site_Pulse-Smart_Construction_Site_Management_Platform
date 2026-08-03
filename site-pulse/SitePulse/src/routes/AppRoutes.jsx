@@ -52,6 +52,13 @@ const CompanyModulesPage = lazy(() => import('@/pages/CompanyAdmin/Modules/index
 const CompanyBrandingPage = lazy(() => import('@/pages/CompanyAdmin/Branding/index.jsx'));
 const CompanySettingsPage = lazy(() => import('@/pages/CompanyAdmin/Settings/index.jsx'));
 
+// CRM pages
+const CrmLeadsPage = lazy(() => import('@/pages/CRM/Leads/index.jsx'));
+const CrmClientsPage = lazy(() => import('@/pages/CRM/Clients/index.jsx'));
+const CrmPipelinePage = lazy(() => import('@/pages/CRM/Pipeline/index.jsx'));
+const CrmMeetingsPage = lazy(() => import('@/pages/CRM/Meetings/index.jsx'));
+const CrmFollowUpsPage = lazy(() => import('@/pages/CRM/FollowUps/index.jsx'));
+
 /**
  * Suspense wrapper for lazy-loaded components.
  * Shows a loading spinner while the component chunk is being fetched.
@@ -147,6 +154,13 @@ function AppRoutes() {
         <Route path={ROUTES.PROFILE} element={<SettingsPage />} />
         <Route path={ROUTES.SECURITY} element={<SettingsPage />} />
         <Route path={ROUTES.BILLING} element={<SettingsPage />} />
+        
+        {/* CRM routes */}
+        <Route path={ROUTES.CRM_LEADS} element={<CrmLeadsPage />} />
+        <Route path={ROUTES.CRM_CLIENTS} element={<CrmClientsPage />} />
+        <Route path={ROUTES.CRM_PIPELINE} element={<CrmPipelinePage />} />
+        <Route path={ROUTES.CRM_MEETINGS} element={<CrmMeetingsPage />} />
+        <Route path={ROUTES.CRM_FOLLOWUPS} element={<CrmFollowUpsPage />} />
       </Route>
 
       {/* Protected platform owner routes */}

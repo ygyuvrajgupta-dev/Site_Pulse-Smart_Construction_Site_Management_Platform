@@ -20,6 +20,15 @@ export const ROUTES = {
   EMPLOYEES: '/employees',
   NOTIFICATIONS: '/notifications',
   
+  // CRM routes
+  CRM_LEADS: '/crm/leads',
+  CRM_LEAD_DETAIL: '/crm/leads/:id',
+  CRM_CLIENTS: '/crm/clients',
+  CRM_CLIENT_DETAIL: '/crm/clients/:id',
+  CRM_PIPELINE: '/crm/pipeline',
+  CRM_MEETINGS: '/crm/meetings',
+  CRM_FOLLOWUPS: '/crm/followups',
+  
   // Platform Owner routes
   PLATFORM: '/platform',
   PLATFORM_COMPANIES: '/platform/companies',
@@ -99,6 +108,41 @@ export const ROUTE_CONFIG = {
   [ROUTES.LEADS]: {
     path: ROUTES.LEADS,
     label: 'Leads',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.CRM_LEADS]: {
+    path: ROUTES.CRM_LEADS,
+    label: 'Leads',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.CRM_CLIENTS]: {
+    path: ROUTES.CRM_CLIENTS,
+    label: 'Clients',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.CRM_PIPELINE]: {
+    path: ROUTES.CRM_PIPELINE,
+    label: 'Pipeline',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.CRM_MEETINGS]: {
+    path: ROUTES.CRM_MEETINGS,
+    label: 'Meetings',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.CRM_FOLLOWUPS]: {
+    path: ROUTES.CRM_FOLLOWUPS,
+    label: 'Follow Ups',
     isPublic: false,
     requiresAuth: true,
     layout: 'dashboard',
