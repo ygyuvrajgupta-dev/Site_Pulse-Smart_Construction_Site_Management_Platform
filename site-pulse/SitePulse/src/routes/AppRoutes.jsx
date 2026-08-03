@@ -29,6 +29,28 @@ const NotFoundPage = lazy(() => import('@/pages/NotFound/index.jsx'));
 const LandingLayout = lazy(() => import('@/layouts/LandingLayout.jsx'));
 const AuthLayout = lazy(() => import('@/layouts/AuthLayout.jsx'));
 const DashboardLayout = lazy(() => import('@/layouts/DashboardLayout.jsx'));
+const PlatformLayout = lazy(() => import('@/layouts/PlatformLayout.jsx'));
+const CompanyAdminLayout = lazy(() => import('@/layouts/CompanyAdminLayout.jsx'));
+
+// Platform pages
+const PlatformPage = lazy(() => import('@/pages/Platform/index.jsx'));
+const PlatformCompaniesPage = lazy(() => import('@/pages/Platform/Companies/index.jsx'));
+const PlatformPlansPage = lazy(() => import('@/pages/Platform/Plans/index.jsx'));
+const PlatformSubscriptionsPage = lazy(() => import('@/pages/Platform/Subscriptions/index.jsx'));
+const PlatformCouponsPage = lazy(() => import('@/pages/Platform/Coupons/index.jsx'));
+const PlatformAnalyticsPage = lazy(() => import('@/pages/Platform/Analytics/index.jsx'));
+const PlatformSettingsPage = lazy(() => import('@/pages/Platform/Settings/index.jsx'));
+
+// Company Admin pages
+const CompanyAdminPage = lazy(() => import('@/pages/CompanyAdmin/index.jsx'));
+const CompanyUsersPage = lazy(() => import('@/pages/CompanyAdmin/Users/index.jsx'));
+const CompanyEmployeesPage = lazy(() => import('@/pages/CompanyAdmin/Employees/index.jsx'));
+const CompanyRolesPage = lazy(() => import('@/pages/CompanyAdmin/Roles/index.jsx'));
+const CompanyDepartmentsPage = lazy(() => import('@/pages/CompanyAdmin/Departments/index.jsx'));
+const CompanyProfilePage = lazy(() => import('@/pages/CompanyAdmin/Profile/index.jsx'));
+const CompanyModulesPage = lazy(() => import('@/pages/CompanyAdmin/Modules/index.jsx'));
+const CompanyBrandingPage = lazy(() => import('@/pages/CompanyAdmin/Branding/index.jsx'));
+const CompanySettingsPage = lazy(() => import('@/pages/CompanyAdmin/Settings/index.jsx'));
 
 /**
  * Suspense wrapper for lazy-loaded components.
@@ -125,6 +147,46 @@ function AppRoutes() {
         <Route path={ROUTES.PROFILE} element={<SettingsPage />} />
         <Route path={ROUTES.SECURITY} element={<SettingsPage />} />
         <Route path={ROUTES.BILLING} element={<SettingsPage />} />
+      </Route>
+
+      {/* Protected platform owner routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <SuspenseWrapper>
+              <PlatformLayout />
+            </SuspenseWrapper>
+          </ProtectedRoute>
+        }
+      >
+        <Route path={ROUTES.PLATFORM} element={<PlatformPage />} />
+        <Route path={ROUTES.PLATFORM_COMPANIES} element={<PlatformCompaniesPage />} />
+        <Route path={ROUTES.PLATFORM_PLANS} element={<PlatformPlansPage />} />
+        <Route path={ROUTES.PLATFORM_SUBSCRIPTIONS} element={<PlatformSubscriptionsPage />} />
+        <Route path={ROUTES.PLATFORM_COUPONS} element={<PlatformCouponsPage />} />
+        <Route path={ROUTES.PLATFORM_ANALYTICS} element={<PlatformAnalyticsPage />} />
+        <Route path={ROUTES.PLATFORM_SETTINGS} element={<PlatformSettingsPage />} />
+      </Route>
+
+      {/* Protected company admin routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <SuspenseWrapper>
+              <CompanyAdminLayout />
+            </SuspenseWrapper>
+          </ProtectedRoute>
+        }
+      >
+        <Route path={ROUTES.COMPANY} element={<CompanyAdminPage />} />
+        <Route path={ROUTES.COMPANY_USERS} element={<CompanyUsersPage />} />
+        <Route path={ROUTES.COMPANY_EMPLOYEES} element={<CompanyEmployeesPage />} />
+        <Route path={ROUTES.COMPANY_ROLES} element={<CompanyRolesPage />} />
+        <Route path={ROUTES.COMPANY_DEPARTMENTS} element={<CompanyDepartmentsPage />} />
+        <Route path={ROUTES.COMPANY_PROFILE} element={<CompanyProfilePage />} />
+        <Route path={ROUTES.COMPANY_MODULES} element={<CompanyModulesPage />} />
+        <Route path={ROUTES.COMPANY_BRANDING} element={<CompanyBrandingPage />} />
+        <Route path={ROUTES.COMPANY_SETTINGS} element={<CompanySettingsPage />} />
       </Route>
 
       {/* 404 catch-all */}
