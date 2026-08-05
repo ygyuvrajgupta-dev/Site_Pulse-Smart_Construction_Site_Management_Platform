@@ -26,6 +26,9 @@ const ProjectDetailPage = lazy(() => import('@/pages/Projects/ProjectDetail.jsx'
 const SitesPage = lazy(() => import('@/pages/Sites/index.jsx'));
 const SiteDetailPage = lazy(() => import('@/pages/Sites/SiteDetail.jsx'));
 
+// HR pages
+const HrPage = lazy(() => import('@/pages/HR/index.jsx'));
+
 // Settings pages
 const SettingsPage = lazy(() => import('@/pages/Settings/index.jsx'));
 
@@ -138,6 +141,7 @@ function AppRoutes() {
         <Route path={ROUTES.LEADS} element={<DashboardPage />} />
         <Route path={ROUTES.CLIENTS} element={<DashboardPage />} />
         <Route path={ROUTES.EMPLOYEES} element={<DashboardPage />} />
+        <Route path={ROUTES.HR} element={<HrPage />} />
         <Route path={ROUTES.NOTIFICATIONS} element={<DashboardPage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
         <Route path={ROUTES.PROFILE} element={<SettingsPage />} />

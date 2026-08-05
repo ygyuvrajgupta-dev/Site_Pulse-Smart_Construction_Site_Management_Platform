@@ -110,6 +110,45 @@ enum IssuePriority {
   CRITICAL
 }
 
+enum LeaveType {
+  ANNUAL
+  SICK
+  PERSONAL
+  MATERNITY
+  PATERNITY
+  UNPAID
+  OTHER
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum PayrollStatus {
+  DRAFT
+  PROCESSED
+  PAID
+  CANCELLED
+}
+
+enum RecruitmentStatus {
+  OPEN
+  IN_PROGRESS
+  HIRED
+  CLOSED
+}
+
+enum PerformanceRating {
+  EXCELLENT
+  GOOD
+  SATISFACTORY
+  NEEDS_IMPROVEMENT
+  POOR
+}
+
 enum InventoryType {
   RAW_MATERIAL
   WORK_IN_PROGRESS
@@ -281,6 +320,11 @@ model Company {
   siteExpenses       SiteExpense[]
   sitePhotos         SitePhoto[]
   siteIssues         SiteIssue[]
+  employeeLeaves     EmployeeLeave[]
+  payrolls           Payroll[]
+  jobPostings        JobPosting[]
+  jobApplications    JobApplication[]
+  performanceReviews PerformanceReview[]
 
   @@map("companies")
 }
@@ -421,6 +465,9 @@ model Employee {
   department   Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
   manager      Employee?   @relation("ManagerEmployee", fields: [reportingToId], references: [id])
   directReports Employee[] @relation("ManagerEmployee")
+  leaves       EmployeeLeave[]
+  payrolls     Payroll[]
+  performanceReviews PerformanceReview[]
 
   @@index([companyId])
   @@index([departmentId])
@@ -792,6 +839,128 @@ model SiteIssue {
   @@index([status])
   @@index([priority])
   @@map("site_issues")
+}
+
+model EmployeeLeave {
+  id          String      @id @default(cuid())
+  companyId   String
+  employeeId  String
+  leaveType   LeaveType
+  startDate   DateTime
+  endDate     DateTime
+  days        Int
+  reason      String?
+  status      LeaveStatus @default(PENDING)
+  approvedBy  String?
+  approvedAt  DateTime?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([status])
+  @@map("employee_leaves")
+}
+
+model Payroll {
+  id          String        @id @default(cuid())
+  companyId   String
+  employeeId  String
+  periodStart DateTime
+  periodEnd   DateTime
+  basicSalary Float?
+  allowances  Float?        @default(0)
+  deductions  Float?        @default(0)
+  netSalary   Float?
+  status      PayrollStatus @default(DRAFT)
+  paymentDate DateTime?
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([employeeId])
+  @@index([status])
+  @@map("payrolls")
+}
+
+model JobPosting {
+  id            String          @id @default(cuid())
+  companyId     String
+  title         String
+  department    String?
+  description   String?
+  requirements  String?
+  salaryRange   String?
+  location      String?
+  employmentType String?
+  status        RecruitmentStatus @default(OPEN)
+  postedBy      String?
+  postedAt      DateTime        @default(now())
+  closingDate   DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  applications JobApplication[]
+
+  @@index([companyId])
+  @@index([status])
+  @@map("job_postings")
+}
+
+model JobApplication {
+  id           String       @id @default(cuid())
+  companyId    String
+  jobPostingId String
+  applicantName String
+  applicantEmail String
+  phone        String?
+  resumeUrl    String?
+  coverLetter  String?
+  status       String       @default("APPLIED")
+  appliedAt    DateTime     @default(now())
+  notes        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  company   Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  jobPosting JobPosting @relation(fields: [jobPostingId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([jobPostingId])
+  @@map("job_applications")
+}
+
+model PerformanceReview {
+  id          String           @id @default(cuid())
+  companyId   String
+  employeeId  String
+  reviewerId  String?
+  period      String
+  rating      PerformanceRating
+  score       Int?            @default(0)
+  strengths   String?
+  improvements String?
+  goals       String?
+  reviewerNotes String?
+  reviewedAt  DateTime?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([employeeId])
+  @@map("performance_reviews")
 }
 
 model InventoryItem {

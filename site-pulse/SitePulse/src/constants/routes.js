@@ -21,6 +21,7 @@ export const ROUTES = {
   LEADS: '/leads',
   CLIENTS: '/clients',
   EMPLOYEES: '/employees',
+  HR: '/hr',
   NOTIFICATIONS: '/notifications',
   
   // CRM routes
@@ -118,6 +119,20 @@ export const ROUTE_CONFIG = {
   [ROUTES.LEADS]: {
     path: ROUTES.LEADS,
     label: 'Leads',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.EMPLOYEES]: {
+    path: ROUTES.EMPLOYEES,
+    label: 'Employees',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.HR]: {
+    path: ROUTES.HR,
+    label: 'HR Management',
     isPublic: false,
     requiresAuth: true,
     layout: 'dashboard',
