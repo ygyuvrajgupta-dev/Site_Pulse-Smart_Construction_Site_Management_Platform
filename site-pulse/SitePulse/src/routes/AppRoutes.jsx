@@ -22,6 +22,10 @@ const DashboardPage = lazy(() => import('@/pages/Dashboard/index.jsx'));
 const ProjectsPage = lazy(() => import('@/pages/Projects/index.jsx'));
 const ProjectDetailPage = lazy(() => import('@/pages/Projects/ProjectDetail.jsx'));
 
+// Sites pages
+const SitesPage = lazy(() => import('@/pages/Sites/index.jsx'));
+const SiteDetailPage = lazy(() => import('@/pages/Sites/SiteDetail.jsx'));
+
 // Settings pages
 const SettingsPage = lazy(() => import('@/pages/Settings/index.jsx'));
 
@@ -129,6 +133,8 @@ function AppRoutes() {
         <Route path={ROUTES.COMPANIES} element={<DashboardPage />} />
         <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
         <Route path={ROUTES.PROJECT_DETAIL} element={<ProjectDetailPage />} />
+        <Route path={ROUTES.SITES} element={<SitesPage />} />
+        <Route path={ROUTES.SITE_DETAIL} element={<SiteDetailPage />} />
         <Route path={ROUTES.LEADS} element={<DashboardPage />} />
         <Route path={ROUTES.CLIENTS} element={<DashboardPage />} />
         <Route path={ROUTES.EMPLOYEES} element={<DashboardPage />} />

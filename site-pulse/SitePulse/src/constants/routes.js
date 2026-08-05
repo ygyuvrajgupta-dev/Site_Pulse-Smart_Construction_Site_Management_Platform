@@ -16,6 +16,8 @@ export const ROUTES = {
   COMPANIES: '/companies',
   PROJECTS: '/projects',
   PROJECT_DETAIL: '/projects/:id',
+  SITES: '/sites',
+  SITE_DETAIL: '/sites/:id',
   LEADS: '/leads',
   CLIENTS: '/clients',
   EMPLOYEES: '/employees',
@@ -102,6 +104,13 @@ export const ROUTE_CONFIG = {
   [ROUTES.PROJECTS]: {
     path: ROUTES.PROJECTS,
     label: 'Projects',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.SITES]: {
+    path: ROUTES.SITES,
+    label: 'Sites',
     isPublic: false,
     requiresAuth: true,
     layout: 'dashboard',

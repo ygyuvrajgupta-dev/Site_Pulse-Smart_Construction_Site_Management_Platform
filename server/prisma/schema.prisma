@@ -82,6 +82,34 @@ enum SiteStatus {
   ARCHIVED
 }
 
+enum ReportStatus {
+  DRAFT
+  SUBMITTED
+  APPROVED
+  REJECTED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  ON_LEAVE
+}
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
 enum InventoryType {
   RAW_MATERIAL
   WORK_IN_PROGRESS
@@ -246,6 +274,13 @@ model Company {
   companyAdmins      CompanyAdmin[]
   tasks              Task[]
   milestones         Milestone[]
+  siteReports        SiteReport[]
+  siteProgress       SiteProgress[]
+  siteMaterials      SiteMaterial[]
+  siteAttendance     SiteAttendance[]
+  siteExpenses       SiteExpense[]
+  sitePhotos         SitePhoto[]
+  siteIssues         SiteIssue[]
 
   @@map("companies")
 }
@@ -375,9 +410,9 @@ model Employee {
   hireDate        DateTime?
   terminationDate DateTime?
   salary          Decimal? @db.Decimal(12, 2)
-  currency        String   @default("USD")
+  currency        String  @default("USD")
   reportingToId   String?
-  isActive        Boolean  @default(true)
+  isActive        Boolean @default(true)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -511,6 +546,13 @@ model Site {
   company Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   client  Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
   project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  reports SiteReport[]
+  progressEntries SiteProgress[]
+  materials SiteMaterial[]
+  attendance SiteAttendance[]
+  expenses SiteExpense[]
+  photos SitePhoto[]
+  issues SiteIssue[]
 
   @@index([companyId])
   @@index([clientId])
@@ -588,6 +630,168 @@ model Milestone {
   @@index([companyId])
   @@index([projectId])
   @@map("milestones")
+}
+
+model SiteReport {
+  id          String      @id @default(cuid())
+  companyId   String
+  siteId      String
+  reportDate  DateTime
+  status      ReportStatus @default(DRAFT)
+  weather     String?
+  temperature String?
+  summary     String?
+  workCompleted String?
+  workersCount Int?
+  submittedBy String?
+  submittedAt DateTime?
+  approvedBy  String?
+  approvedAt  DateTime?
+  rejectionReason String?
+  notes       String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([siteId])
+  @@index([reportDate])
+  @@map("site_reports")
+}
+
+model SiteProgress {
+  id          String   @id @default(cuid())
+  companyId   String
+  siteId      String
+  progress    Int
+  notes       String?
+  recordedBy  String?
+  recordedAt  DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([siteId])
+  @@index([recordedAt])
+  @@map("site_progress")
+}
+
+model SiteMaterial {
+  id          String   @id @default(cuid())
+  companyId   String
+  siteId      String
+  name        String
+  description String?
+  unit        String?
+  quantityRequired Float?
+  quantityUsed Float? @default(0)
+  unitCost    Float?
+  supplier    String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([siteId])
+  @@map("site_materials")
+}
+
+model SiteAttendance {
+  id          String          @id @default(cuid())
+  companyId   String
+  siteId      String
+  employeeId  String
+  employeeName String
+  date        DateTime
+  status      AttendanceStatus @default(PRESENT)
+  checkIn     DateTime?
+  checkOut    DateTime?
+  hoursWorked Float?
+  notes       String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([siteId])
+  @@index([date])
+  @@map("site_attendance")
+}
+
+model SiteExpense {
+  id          String   @id @default(cuid())
+  companyId   String
+  siteId      String
+  category    String
+  amount      Float
+  currency    String  @default("USD")
+  description String?
+  receiptUrl  String?
+  expenseDate DateTime
+  recordedBy  String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([siteId])
+  @@index([expenseDate])
+  @@map("site_expenses")
+}
+
+model SitePhoto {
+  id          String   @id @default(cuid())
+  companyId   String
+  siteId      String
+  url         String
+  caption     String?
+  category    String?
+  takenBy     String?
+  takenAt     DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([siteId])
+  @@map("site_photos")
+}
+
+model SiteIssue {
+  id          String        @id @default(cuid())
+  companyId   String
+  siteId      String
+  title       String
+  description String?
+  status      IssueStatus   @default(OPEN)
+  priority    IssuePriority @default(MEDIUM)
+  reportedBy  String?
+  assignedTo  String?
+  resolvedAt  DateTime?
+  resolution  String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site Site @relation(fields: [siteId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([siteId])
+  @@index([status])
+  @@index([priority])
+  @@map("site_issues")
 }
 
 model InventoryItem {
