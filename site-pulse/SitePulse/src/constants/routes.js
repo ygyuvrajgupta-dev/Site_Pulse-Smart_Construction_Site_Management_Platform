@@ -15,6 +15,7 @@ export const ROUTES = {
   DASHBOARD: '/dashboard',
   COMPANIES: '/companies',
   PROJECTS: '/projects',
+  PROJECT_DETAIL: '/projects/:id',
   LEADS: '/leads',
   CLIENTS: '/clients',
   EMPLOYEES: '/employees',

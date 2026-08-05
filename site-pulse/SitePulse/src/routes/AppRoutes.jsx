@@ -7,7 +7,6 @@ import LoadingScreen from '@/components/common/LoadingScreen';
 
 // ============================================
 // Lazy-loaded pages with code splitting.
-// Each page chunk is loaded only when needed.
 // ============================================
 
 // Landing pages
@@ -18,6 +17,10 @@ const AuthPage = lazy(() => import('@/pages/Auth/index.jsx'));
 
 // Dashboard pages
 const DashboardPage = lazy(() => import('@/pages/Dashboard/index.jsx'));
+
+// Projects pages
+const ProjectsPage = lazy(() => import('@/pages/Projects/index.jsx'));
+const ProjectDetailPage = lazy(() => import('@/pages/Projects/ProjectDetail.jsx'));
 
 // Settings pages
 const SettingsPage = lazy(() => import('@/pages/Settings/index.jsx'));
@@ -61,7 +64,6 @@ const CrmFollowUpsPage = lazy(() => import('@/pages/CRM/FollowUps/index.jsx'));
 
 /**
  * Suspense wrapper for lazy-loaded components.
- * Shows a loading spinner while the component chunk is being fetched.
  */
 function SuspenseWrapper({ children }) {
   return (
@@ -73,17 +75,6 @@ function SuspenseWrapper({ children }) {
 
 /**
  * Application route structure with lazy loading and route guards.
- *
- * Route hierarchy:
- *   /                  → LandingLayout > Landing (public)
- *   /login             → AuthLayout > Auth (public, redirects if authenticated)
- *   /register          → AuthLayout > Auth (public, redirects if authenticated)
- *   /dashboard         → DashboardLayout > Dashboard (protected)
- *   /companies         → DashboardLayout > Dashboard (protected)
- *   /projects          → DashboardLayout > Dashboard (protected)
- *   /leads             → DashboardLayout > Dashboard (protected)
- *   /settings          → DashboardLayout > Settings (protected)
- *   *                  → NotFound
  */
 function AppRoutes() {
   return (
@@ -107,30 +98,21 @@ function AppRoutes() {
           </SuspenseWrapper>
         }
       >
-        <Route
-          path={ROUTES.LOGIN}
-          element={
-            <PublicRoute>
-              <AuthPage />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path={ROUTES.REGISTER}
-          element={
-            <PublicRoute>
-              <AuthPage />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path={ROUTES.FORGOT_PASSWORD}
-          element={
-            <PublicRoute>
-              <AuthPage />
-            </PublicRoute>
-          }
-        />
+        <Route path={ROUTES.LOGIN} element={
+          <PublicRoute>
+            <AuthPage />
+          </PublicRoute>
+        } />
+        <Route path={ROUTES.REGISTER} element={
+          <PublicRoute>
+            <AuthPage />
+          </PublicRoute>
+        } />
+        <Route path={ROUTES.FORGOT_PASSWORD} element={
+          <PublicRoute>
+            <AuthPage />
+          </PublicRoute>
+        } />
       </Route>
 
       {/* Protected dashboard routes */}
@@ -145,7 +127,8 @@ function AppRoutes() {
       >
         <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
         <Route path={ROUTES.COMPANIES} element={<DashboardPage />} />
-        <Route path={ROUTES.PROJECTS} element={<DashboardPage />} />
+        <Route path={ROUTES.PROJECTS} element={<ProjectsPage />} />
+        <Route path={ROUTES.PROJECT_DETAIL} element={<ProjectDetailPage />} />
         <Route path={ROUTES.LEADS} element={<DashboardPage />} />
         <Route path={ROUTES.CLIENTS} element={<DashboardPage />} />
         <Route path={ROUTES.EMPLOYEES} element={<DashboardPage />} />

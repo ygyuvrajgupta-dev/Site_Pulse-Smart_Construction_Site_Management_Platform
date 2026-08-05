@@ -68,6 +68,13 @@ enum TaskPriority {
   URGENT
 }
 
+enum MilestoneStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  DELAYED
+}
+
 enum SiteStatus {
   ACTIVE
   INACTIVE
@@ -238,6 +245,7 @@ model Company {
   roles              Role[]
   companyAdmins      CompanyAdmin[]
   tasks              Task[]
+  milestones         Milestone[]
 
   @@map("companies")
 }
@@ -470,6 +478,7 @@ model Project {
   client  Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
   sites   Site[]
   tasks   Task[]
+  milestones Milestone[]
 
   @@index([companyId])
   @@index([clientId])
@@ -559,6 +568,26 @@ model TaskComment {
 
   @@index([taskId])
   @@map("task_comments")
+}
+
+model Milestone {
+  id          String          @id @default(cuid())
+  companyId   String
+  projectId   String
+  name        String
+  description String?
+  status      MilestoneStatus @default(NOT_STARTED)
+  dueDate     DateTime?
+  completedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([projectId])
+  @@map("milestones")
 }
 
 model InventoryItem {
