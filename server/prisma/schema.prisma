@@ -197,6 +197,12 @@ enum GstType {
   UTGST
 }
 
+enum FolderVisibility {
+  PRIVATE
+  COMPANY
+  SHARED
+}
+
 enum InventoryType {
   RAW_MATERIAL
   WORK_IN_PROGRESS
@@ -379,6 +385,7 @@ model Company {
   stockMovements     StockMovement[]
   suppliers          Supplier[]
   purchaseOrders     PurchaseOrder[]
+  folders            Folder[]
 
   @@map("companies")
 }
@@ -472,6 +479,8 @@ model User {
   comments            TaskComment[]
   headedDepartment    Department?
   subscriptions       Subscription[]
+  folderShares        FolderShare[]
+  documentShares      DocumentShare[]
 
   @@index([companyId])
   @@index([roleId])
@@ -1257,10 +1266,62 @@ model Transaction {
   @@map("transactions")
 }
 
+model Folder {
+  id          String   @id @default(cuid())
+  companyId   String
+  name        String
+  parentId    String?
+  description String?
+  visibility  FolderVisibility @default(COMPANY)
+  createdBy   String?
+  isArchived  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  parent  Folder? @relation("FolderSubfolders", fields: [parentId], references: [id])
+  subfolders Folder[] @relation("FolderSubfolders")
+  documents Document[]
+  shares  FolderShare[]
+
+  @@index([companyId])
+  @@index([parentId])
+  @@map("folders")
+}
+
+model FolderShare {
+  id       String @id @default(cuid())
+  folderId String
+  userId   String
+  canEdit  Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  folder Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([folderId, userId])
+  @@map("folder_shares")
+}
+
+model DocumentShare {
+  id        String   @id @default(cuid())
+  documentId String
+  userId    String
+  canEdit   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, userId])
+  @@map("document_shares")
+}
+
 model Document {
   id          String           @id @default(cuid())
   companyId   String
   uploaderId  String
+  folderId    String?
   leadId      String?
   clientId    String?
   category    DocumentCategory @default(OTHER)
@@ -1276,11 +1337,14 @@ model Document {
   updatedAt   DateTime         @updatedAt
 
   company  Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  folder   Folder?  @relation(fields: [folderId], references: [id], onDelete: SetNull)
   uploader User     @relation("DocumentUploader", fields: [uploaderId], references: [id])
   lead     Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
   client   Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  shares   DocumentShare[]
 
   @@index([companyId])
+  @@index([folderId])
   @@index([category])
   @@map("documents")
 }

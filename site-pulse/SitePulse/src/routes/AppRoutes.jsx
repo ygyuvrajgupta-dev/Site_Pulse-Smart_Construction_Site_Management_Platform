@@ -35,6 +35,9 @@ const InventoryPage = lazy(() => import('@/pages/Inventory/index.jsx'));
 // Finance pages
 const FinancePage = lazy(() => import('@/pages/Finance/index.jsx'));
 
+// Documents pages
+const DocumentsPage = lazy(() => import('@/pages/Documents/index.jsx'));
+
 // Settings pages
 const SettingsPage = lazy(() => import('@/pages/Settings/index.jsx'));
 
@@ -150,6 +153,7 @@ function AppRoutes() {
         <Route path={ROUTES.HR} element={<HrPage />} />
         <Route path={ROUTES.INVENTORY} element={<InventoryPage />} />
         <Route path={ROUTES.FINANCE} element={<FinancePage />} />
+        <Route path={ROUTES.DOCUMENTS} element={<DocumentsPage />} />
         <Route path={ROUTES.NOTIFICATIONS} element={<DashboardPage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
         <Route path={ROUTES.PROFILE} element={<SettingsPage />} />

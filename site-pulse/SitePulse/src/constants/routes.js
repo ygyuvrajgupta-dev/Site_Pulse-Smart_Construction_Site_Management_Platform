@@ -24,6 +24,7 @@ export const ROUTES = {
   HR: '/hr',
   INVENTORY: '/inventory',
   FINANCE: '/finance',
+  DOCUMENTS: '/documents',
   NOTIFICATIONS: '/notifications',
   
   // CRM routes
@@ -149,6 +150,13 @@ export const ROUTE_CONFIG = {
   [ROUTES.FINANCE]: {
     path: ROUTES.FINANCE,
     label: 'Finance',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.DOCUMENTS]: {
+    path: ROUTES.DOCUMENTS,
+    label: 'Documents',
     isPublic: false,
     requiresAuth: true,
     layout: 'dashboard',
