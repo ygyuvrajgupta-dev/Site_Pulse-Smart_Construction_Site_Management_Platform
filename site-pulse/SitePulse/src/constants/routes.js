@@ -22,6 +22,7 @@ export const ROUTES = {
   CLIENTS: '/clients',
   EMPLOYEES: '/employees',
   HR: '/hr',
+  INVENTORY: '/inventory',
   NOTIFICATIONS: '/notifications',
   
   // CRM routes
@@ -133,6 +134,13 @@ export const ROUTE_CONFIG = {
   [ROUTES.HR]: {
     path: ROUTES.HR,
     label: 'HR Management',
+    isPublic: false,
+    requiresAuth: true,
+    layout: 'dashboard',
+  },
+  [ROUTES.INVENTORY]: {
+    path: ROUTES.INVENTORY,
+    label: 'Inventory',
     isPublic: false,
     requiresAuth: true,
     layout: 'dashboard',

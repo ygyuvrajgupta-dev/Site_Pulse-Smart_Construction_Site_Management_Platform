@@ -9,6 +9,7 @@ import employeeRoutes from "./employee.routes.js";
 import notificationRoutes from "./notification.routes.js";
 import siteRoutes from "./site.routes.js";
 import hrRoutes from "./hr.routes.js";
+import inventoryRoutes from "./inventory.routes.js";
 import { protect } from "../middleware/auth.middleware.js";
 
 /**
@@ -41,5 +42,6 @@ router.use("/employees", protect, employeeRoutes);
 router.use("/notifications", protect, notificationRoutes);
 router.use("/sites", protect, siteRoutes);
 router.use("/hr", protect, hrRoutes);
+router.use("/inventory", protect, inventoryRoutes);
 
 export default router;
