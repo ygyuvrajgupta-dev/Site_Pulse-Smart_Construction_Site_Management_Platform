@@ -32,6 +32,9 @@ const HrPage = lazy(() => import('@/pages/HR/index.jsx'));
 // Inventory pages
 const InventoryPage = lazy(() => import('@/pages/Inventory/index.jsx'));
 
+// Finance pages
+const FinancePage = lazy(() => import('@/pages/Finance/index.jsx'));
+
 // Settings pages
 const SettingsPage = lazy(() => import('@/pages/Settings/index.jsx'));
 
@@ -146,6 +149,7 @@ function AppRoutes() {
         <Route path={ROUTES.EMPLOYEES} element={<DashboardPage />} />
         <Route path={ROUTES.HR} element={<HrPage />} />
         <Route path={ROUTES.INVENTORY} element={<InventoryPage />} />
+        <Route path={ROUTES.FINANCE} element={<FinancePage />} />
         <Route path={ROUTES.NOTIFICATIONS} element={<DashboardPage />} />
         <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
         <Route path={ROUTES.PROFILE} element={<SettingsPage />} />

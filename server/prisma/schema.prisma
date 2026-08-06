@@ -164,6 +164,39 @@ enum StockMovementType {
   TRANSFER
 }
 
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  DEBIT_CARD
+  CHEQUE
+  UPI
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum GstType {
+  CGST
+  SGST
+  IGST
+  UTGST
+}
+
 enum InventoryType {
   RAW_MATERIAL
   WORK_IN_PROGRESS
