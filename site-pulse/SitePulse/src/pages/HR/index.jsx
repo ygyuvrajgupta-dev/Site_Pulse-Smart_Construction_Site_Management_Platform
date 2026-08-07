@@ -5,6 +5,7 @@ import {
   FiGrid, FiStar, FiFileText, FiPlus
 } from 'react-icons/fi';
 import api from '@/services/axios';
+import ExportButton from '@/components/common/ExportButton';
 
 const HR_API = '/api/v1/hr';
 
@@ -32,6 +33,7 @@ function HrPage() {
             Manage employees, attendance, leaves, payroll, and more
           </p>
         </div>
+        <ExportButton type="employees" label="Export Employees" />
       </div>
 
       <div className="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700 pb-2">
@@ -196,6 +198,7 @@ function AttendanceTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Attendance</h3>
+        <ExportButton type="attendance" label="Export Attendance" />
         <button className="btn btn-primary">
           <FiPlus className="w-4 h-4" />
           Record Attendance

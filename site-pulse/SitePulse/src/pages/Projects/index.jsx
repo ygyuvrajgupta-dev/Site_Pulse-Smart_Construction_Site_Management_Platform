@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus, FiSearch, FiTrash2, FiEdit, FiFolder, FiUsers, FiList, FiFlag } from 'react-icons/fi';
 import api from '@/services/axios';
+import ExportButton from '@/components/common/ExportButton';
 
 const PROJECTS_API = '/api/v1/projects';
 
@@ -89,6 +90,7 @@ function ProjectsPage() {
             Manage your projects, milestones, and tasks
           </p>
         </div>
+        <ExportButton type="projects" label="Export Projects" />
         <button
           onClick={() => setShowModal(true)}
           className="btn btn-primary"

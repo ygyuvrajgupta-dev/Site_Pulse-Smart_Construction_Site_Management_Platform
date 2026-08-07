@@ -5,6 +5,7 @@ import {
   FiPercent, FiPieChart, FiGrid, FiPlus
 } from 'react-icons/fi';
 import api from '@/services/axios';
+import ExportButton from '@/components/common/ExportButton';
 
 const FINANCE_API = '/api/v1/finance';
 
@@ -30,6 +31,7 @@ function FinancePage() {
             Manage invoices, expenses, income, payments, and GST
           </p>
         </div>
+        <ExportButton type="finance" label="Export Finance" />
       </div>
 
       <div className="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700 pb-2">

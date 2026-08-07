@@ -5,6 +5,7 @@ import {
   FiTruck, FiBarcode, FiQrCode, FiPlus, FiSearch
 } from 'react-icons/fi';
 import api from '@/services/axios';
+import ExportButton from '@/components/common/ExportButton';
 
 const INVENTORY_API = '/api/v1/inventory';
 
@@ -32,6 +33,7 @@ function InventoryPage() {
             Manage products, stock, warehouses, and suppliers
           </p>
         </div>
+        <ExportButton type="inventory" label="Export Inventory" />
       </div>
 
       <div className="flex flex-wrap gap-2 border-b border-gray-200 dark:border-gray-700 pb-2">

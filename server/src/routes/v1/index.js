@@ -12,6 +12,7 @@ import hrRoutes from "./hr.routes.js";
 import inventoryRoutes from "./inventory.routes.js";
 import financeRoutes from "./finance.routes.js";
 import documentRoutes from "./document.routes.js";
+import exportRoutes from "./export.routes.js";
 import { protect } from "../middleware/auth.middleware.js";
 
 /**
@@ -47,5 +48,6 @@ router.use("/hr", protect, hrRoutes);
 router.use("/inventory", protect, inventoryRoutes);
 router.use("/finance", protect, financeRoutes);
 router.use("/documents", protect, documentRoutes);
+router.use("/export", protect, exportRoutes);
 
 export default router;

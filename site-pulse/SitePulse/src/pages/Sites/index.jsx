@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { FiPlus, FiSearch, FiTrash2, FiEdit, FiMapPin, FiUsers, FiList, FiFlag } from 'react-icons/fi';
 import api from '@/services/axios';
+import ExportButton from '@/components/common/ExportButton';
 
 const SITES_API = '/api/v1/sites';
 
@@ -84,9 +85,10 @@ function SitesPage() {
             Sites
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Manage your construction sites and field operations
+            Manage your project sites and locations
           </p>
         </div>
+        <ExportButton type="sites" label="Export Sites" />
         <button
           onClick={() => setShowModal(true)}
           className="btn btn-primary"
