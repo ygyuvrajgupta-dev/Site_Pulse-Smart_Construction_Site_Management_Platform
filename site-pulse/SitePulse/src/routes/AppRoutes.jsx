@@ -41,6 +41,16 @@ const DocumentsPage = lazy(() => import('@/pages/Documents/index.jsx'));
 // Settings pages
 const SettingsPage = lazy(() => import('@/pages/Settings/index.jsx'));
 
+// AI pages
+const AiOverviewPage = lazy(() => import('@/pages/AI/index.jsx'));
+const AiChatPage = lazy(() => import('@/pages/AI/AiChat.jsx'));
+const AiReportsPage = lazy(() => import('@/pages/AI/AiReports.jsx'));
+const AiOcrPage = lazy(() => import('@/pages/AI/AiOcr.jsx'));
+const AiAnalyticsPage = lazy(() => import('@/pages/AI/AiAnalytics.jsx'));
+const AiInsightsPage = lazy(() => import('@/pages/AI/AiInsights.jsx'));
+const AiSuggestionsPage = lazy(() => import('@/pages/AI/AiSuggestions.jsx'));
+const AiUsagePage = lazy(() => import('@/pages/AI/AiUsage.jsx'));
+
 // Error pages
 const NotFoundPage = lazy(() => import('@/pages/NotFound/index.jsx'));
 
@@ -159,6 +169,16 @@ function AppRoutes() {
         <Route path={ROUTES.PROFILE} element={<SettingsPage />} />
         <Route path={ROUTES.SECURITY} element={<SettingsPage />} />
         <Route path={ROUTES.BILLING} element={<SettingsPage />} />
+        
+        {/* AI routes */}
+        <Route path={ROUTES.AI} element={<AiOverviewPage />} />
+        <Route path={ROUTES.AI_CHAT} element={<AiChatPage />} />
+        <Route path={ROUTES.AI_REPORTS} element={<AiReportsPage />} />
+        <Route path={ROUTES.AI_OCR} element={<AiOcrPage />} />
+        <Route path={ROUTES.AI_ANALYTICS} element={<AiAnalyticsPage />} />
+        <Route path={ROUTES.AI_INSIGHTS} element={<AiInsightsPage />} />
+        <Route path={ROUTES.AI_SUGGESTIONS} element={<AiSuggestionsPage />} />
+        <Route path={ROUTES.AI_USAGE} element={<AiUsagePage />} />
         
         {/* CRM routes */}
         <Route path={ROUTES.CRM_LEADS} element={<CrmLeadsPage />} />

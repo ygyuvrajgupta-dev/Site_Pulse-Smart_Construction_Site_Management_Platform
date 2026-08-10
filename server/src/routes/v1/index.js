@@ -13,6 +13,7 @@ import inventoryRoutes from "./inventory.routes.js";
 import financeRoutes from "./finance.routes.js";
 import documentRoutes from "./document.routes.js";
 import exportRoutes from "./export.routes.js";
+import aiRoutes from "./ai.routes.js";
 import { protect } from "../middleware/auth.middleware.js";
 
 const router = Router();
@@ -34,5 +35,6 @@ router.use("/inventory", protect, inventoryRoutes);
 router.use("/finance", protect, financeRoutes);
 router.use("/documents", protect, documentRoutes);
 router.use("/export", protect, exportRoutes);
+router.use("/ai", protect, aiRoutes);
 
 export default router;

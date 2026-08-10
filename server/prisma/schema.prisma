@@ -386,6 +386,11 @@ model Company {
   suppliers          Supplier[]
   purchaseOrders     PurchaseOrder[]
   folders            Folder[]
+  aiChatSessions     AiChatSession[]
+  aiReports          AiReport[]
+  aiOcrDocuments     AiOcrDocument[]
+  aiInsights         AiInsight[]
+  aiSuggestions      AiSuggestion[]
 
   @@map("companies")
 }
@@ -481,6 +486,7 @@ model User {
   subscriptions       Subscription[]
   folderShares        FolderShare[]
   documentShares      DocumentShare[]
+  aiChatSessions      AiChatSession[]
 
   @@index([companyId])
   @@index([roleId])
@@ -1500,4 +1506,199 @@ model AiUsageLog {
   @@index([companyId])
   @@index([createdAt])
   @@map("ai_usage_logs")
+}
+
+// ============================================================
+// AI FEATURE MODELS
+// ============================================================
+
+enum AiChatRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum AiReportType {
+  PROJECT
+  SITE
+  FINANCE
+  HR
+  INVENTORY
+  SALES
+  CUSTOM
+}
+
+enum AiReportFormat {
+  MARKDOWN
+  HTML
+  PDF
+  JSON
+}
+
+enum AiOcrStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum AiInsightType {
+  TREND
+  ANOMALY
+  FORECAST
+  CORRELATION
+  PERFORMANCE
+  RISK
+  OPPORTUNITY
+}
+
+enum AiInsightSeverity {
+  INFO
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AiSuggestionType {
+  ACTION
+  OPTIMIZATION
+  AUTOMATION
+  WARNING
+  RECOMMENDATION
+}
+
+model AiChatSession {
+  id          String      @id @default(cuid())
+  companyId   String
+  userId      String
+  title       String?
+  context     Json?
+  isArchived  Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  company Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user    User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AiChatMessage[]
+
+  @@index([companyId])
+  @@index([userId])
+  @@index([updatedAt])
+  @@map("ai_chat_sessions")
+}
+
+model AiChatMessage {
+  id        String     @id @default(cuid())
+  sessionId String
+  role      AiChatRole @default(USER)
+  content   String
+  metadata  Json?
+  tokensIn  Int        @default(0)
+  tokensOut Int        @default(0)
+  createdAt DateTime   @default(now())
+
+  session AiChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+  @@map("ai_chat_messages")
+}
+
+model AiReport {
+  id          String         @id @default(cuid())
+  companyId   String
+  userId      String?
+  type        AiReportType   @default(CUSTOM)
+  title       String
+  description String?
+  prompt      String?
+  content     String?
+  format      AiReportFormat @default(MARKDOWN)
+  data        Json?
+  status      String         @default("GENERATING")
+  error       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("ai_reports")
+}
+
+model AiOcrDocument {
+  id          String       @id @default(cuid())
+  companyId   String
+  userId      String?
+  documentId  String?
+  fileName    String
+  mimeType    String?
+  fileSize    Int?
+  status      AiOcrStatus  @default(PENDING)
+  extractedText String?
+  structuredData Json?
+  confidence  Float?
+  language    String?
+  error       String?
+  processedAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("ai_ocr_documents")
+}
+
+model AiInsight {
+  id          String            @id @default(cuid())
+  companyId   String
+  userId      String?
+  type        AiInsightType     @default(TREND)
+  severity    AiInsightSeverity @default(INFO)
+  title       String
+  description String
+  data        Json?
+  entityType  String?
+  entityId    String?
+  isRead      Boolean           @default(false)
+  isDismissed Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([type])
+  @@index([severity])
+  @@index([createdAt])
+  @@map("ai_insights")
+}
+
+model AiSuggestion {
+  id          String           @id @default(cuid())
+  companyId   String
+  userId      String?
+  type        AiSuggestionType @default(RECOMMENDATION)
+  title       String
+  description String
+  data        Json?
+  entityType  String?
+  entityId    String?
+  isApplied   Boolean          @default(false)
+  isDismissed Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("ai_suggestions")
 }

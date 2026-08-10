@@ -17,6 +17,14 @@ import {
   FiCalendar,
   FiClock,
   FiTrello,
+  FiCpu,
+  FiMessageSquare,
+  FiFileText,
+  FiImage,
+  FiPieChart,
+  FiBulb,
+  FiThumbsUp,
+  FiActivity,
 } from 'react-icons/fi';
 import { ROUTES } from './routes';
 
@@ -24,6 +32,18 @@ import { ROUTES } from './routes';
  * Sidebar navigation items for different layouts.
  * Each item has: path, icon, label
  */
+
+// AI sidebar items (sub-menu)
+export const AI_SIDEBAR = [
+  { path: ROUTES.AI, icon: FiCpu, label: 'AI Overview' },
+  { path: ROUTES.AI_CHAT, icon: FiMessageSquare, label: 'AI Chat' },
+  { path: ROUTES.AI_REPORTS, icon: FiFileText, label: 'AI Reports' },
+  { path: ROUTES.AI_OCR, icon: FiImage, label: 'AI OCR' },
+  { path: ROUTES.AI_ANALYTICS, icon: FiPieChart, label: 'AI Analytics' },
+  { path: ROUTES.AI_INSIGHTS, icon: FiBulb, label: 'AI Insights' },
+  { path: ROUTES.AI_SUGGESTIONS, icon: FiThumbsUp, label: 'AI Suggestions' },
+  { path: ROUTES.AI_USAGE, icon: FiActivity, label: 'AI Usage' },
+];
 
 // Main Dashboard sidebar items
 export const DASHBOARD_SIDEBAR = [
@@ -34,6 +54,7 @@ export const DASHBOARD_SIDEBAR = [
   { path: ROUTES.CRM_MEETINGS, icon: FiCalendar, label: 'Meetings' },
   { path: ROUTES.CRM_FOLLOWUPS, icon: FiClock, label: 'Follow Ups' },
   { path: ROUTES.PROJECTS, icon: FiBriefcase, label: 'Projects' },
+  { path: ROUTES.AI, icon: FiCpu, label: 'AI Features' },
   { path: ROUTES.SETTINGS, icon: FiSettings, label: 'Settings' },
 ];
 

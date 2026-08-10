@@ -78,6 +78,23 @@ const env = {
 
   // Frontend
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
+
+  // AI Configuration
+  ai: {
+    defaultProvider: process.env.AI_DEFAULT_PROVIDER || "openai",
+    openaiApiKey: process.env.OPENAI_API_KEY,
+    openaiModel: process.env.OPENAI_MODEL || "gpt-4o",
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+    anthropicModel: process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
+    googleApiKey: process.env.GOOGLE_API_KEY,
+    googleModel: process.env.GOOGLE_MODEL || "gemini-1.5-pro",
+    mistralApiKey: process.env.MISTRAL_API_KEY,
+    mistralModel: process.env.MISTRAL_MODEL || "mistral-large-latest",
+    maxTokens: parseInt(process.env.AI_MAX_TOKENS || "4096", 10),
+    temperature: parseFloat(process.env.AI_TEMPERATURE || "0.7"),
+    timeoutMs: parseInt(process.env.AI_TIMEOUT_MS || "30000", 10),
+    enableUsageTracking: process.env.AI_ENABLE_USAGE_TRACKING !== "false",
+  },
 };
 
 export default env;
