@@ -6,6 +6,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/context/AuthContext';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { NotificationProvider } from '@/contexts/NotificationContext';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 import App from './App.jsx';
 import './styles/globals.css';
@@ -34,24 +35,26 @@ createRoot(document.getElementById('root')).render(
           <BrowserRouter>
             <ThemeProvider>
               <AuthProvider>
-                <Toaster
-                  position="top-right"
-                  toastOptions={{
-                    duration: 4000,
-                    style: {
-                      borderRadius: '8px',
-                      background: '#333',
-                      color: '#fff',
-                    },
-                    success: {
-                      duration: 3000,
-                    },
-                    error: {
-                      duration: 5000,
-                    },
-                  }}
-                />
-                <App />
+                <NotificationProvider>
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      duration: 4000,
+                      style: {
+                        borderRadius: '8px',
+                        background: '#333',
+                        color: '#fff',
+                      },
+                      success: {
+                        duration: 3000,
+                      },
+                      error: {
+                        duration: 5000,
+                      },
+                    }}
+                  />
+                  <App />
+                </NotificationProvider>
               </AuthProvider>
             </ThemeProvider>
           </BrowserRouter>

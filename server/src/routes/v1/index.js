@@ -15,21 +15,6 @@ import documentRoutes from "./document.routes.js";
 import exportRoutes from "./export.routes.js";
 import { protect } from "../middleware/auth.middleware.js";
 
-/**
- * API v1 route aggregator.
- * Mounts all v1 API routes under a single router.
- * Each route file exports a Router with its own endpoints.
- *
- * Route structure:
- *   /api/v1/auth/*          → authRoutes (public)
- *   /api/v1/users/*         → userRoutes (protected)
- *   /api/v1/companies/*     → companyRoutes (protected)
- *   /api/v1/projects/*      → projectRoutes (protected)
- *   /api/v1/leads/*         → leadRoutes (protected)
- *   /api/v1/clients/*       → clientRoutes (protected)
- *   /api/v1/employees/*     → employeeRoutes (protected)
- *   /api/v1/notifications/* → notificationRoutes (protected)
- */
 const router = Router();
 
 // Authentication routes (no auth required)

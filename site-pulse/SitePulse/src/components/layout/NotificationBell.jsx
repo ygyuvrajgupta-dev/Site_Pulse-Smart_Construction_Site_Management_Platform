@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { FiBell, FiCheck } from 'react-icons/fi';
-import api from '@/services/axios';
+import { useNotifications } from '@/contexts/NotificationContext';
 import { ROUTES } from '@/constants/routes';
 
 /**
@@ -13,20 +12,8 @@ function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Fetch notifications
-  const { data: notificationsData, refetch } = useQuery({
-    queryKey: ['notifications'],
-    queryFn: async () => {
-      const response = await api.get(ROUTES.NOTIFICATIONS, {
-        params: { limit: 5, unreadOnly: true },
-      });
-      return response.data.data;
-    },
-    refetchInterval: 30000, // Refresh every 30 seconds
-  });
-
-  const notifications = notificationsData?.notifications || [];
-  const unreadCount = notificationsData?.pagination?.total || notifications.length;
+  // Use real-time notification context
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -40,22 +27,12 @@ function NotificationBell() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleMarkAsRead = async (id) => {
-    try {
-      await api.patch(`${ROUTES.NOTIFICATIONS}/${id}/read`);
-      refetch();
-    } catch (error) {
-      console.error('Failed to mark notification as read:', error);
-    }
+  const handleMarkAsRead = (id) => {
+    markAsRead(id);
   };
 
-  const handleMarkAllAsRead = async () => {
-    try {
-      await api.patch(`${ROUTES.NOTIFICATIONS}/mark-all-read`);
-      refetch();
-    } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
-    }
+  const handleMarkAllAsRead = () => {
+    markAllAsRead();
   };
 
   const formatTime = (date) => {

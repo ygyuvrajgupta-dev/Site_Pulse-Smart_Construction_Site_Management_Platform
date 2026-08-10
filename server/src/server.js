@@ -5,6 +5,7 @@ import { errorHandler, AppError } from "./middleware/errorHandler.js";
 import notFound from "./middleware/notFound.js";
 import { prisma, testConnection, disconnectDB } from "./config/db.js";
 import logger from "./config/logger.js";
+import { initializeSocket } from "./socket/index.js";
 
 /**
  * Create and configure the Express application.
@@ -39,6 +40,10 @@ async function startServer() {
       logger.info(`📡 API available at http://localhost:${env.port}${env.apiPrefix}`);
       logger.info(`🟢 Health check at http://localhost:${env.port}/health`);
     });
+
+    // Initialize Socket.io
+    initializeSocket(server);
+    logger.info('🔌 Socket.io initialized for real-time notifications');
 
     // Graceful shutdown handlers
     const gracefulShutdown = (signal) => {
