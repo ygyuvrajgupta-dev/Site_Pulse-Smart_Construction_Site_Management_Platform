@@ -95,6 +95,23 @@ const env = {
     timeoutMs: parseInt(process.env.AI_TIMEOUT_MS || "30000", 10),
     enableUsageTracking: process.env.AI_ENABLE_USAGE_TRACKING !== "false",
   },
+
+  // Billing & Payments
+  billing: {
+    provider: process.env.PAYMENT_PROVIDER || "both",
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+    razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET,
+    razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET,
+    razorpayCurrency: process.env.RAZORPAY_CURRENCY || "INR",
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    stripeCurrency: process.env.STRIPE_CURRENCY || "USD",
+    defaultTaxRate: parseFloat(process.env.BILLING_DEFAULT_TAX_RATE || "18"),
+    defaultCurrency: process.env.BILLING_DEFAULT_CURRENCY || "USD",
+    autoRenewEnabled: process.env.BILLING_AUTO_RENEW_ENABLED !== "false",
+    gracePeriodDays: parseInt(process.env.BILLING_GRACE_PERIOD_DAYS || "7", 10),
+  },
 };
 
 export default env;

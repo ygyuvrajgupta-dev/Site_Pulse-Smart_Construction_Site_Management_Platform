@@ -277,6 +277,37 @@ enum BillingInterval {
   ANNUAL
 }
 
+enum PaymentProvider {
+  RAZORPAY
+  STRIPE
+  MANUAL
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED
+}
+
+enum CouponStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+}
+
+enum SubscriptionEventType {
+  CREATED
+  ACTIVATED
+  RENEWED
+  UPGRADED
+  DOWNGRADED
+  CANCELED
+  EXPIRED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  TRIAL_STARTED
+  TRIAL_ENDED
+}
+
 enum ActivityAction {
   CREATED
   UPDATED
@@ -358,6 +389,9 @@ model Company {
   transactions       Transaction[]
   documents          Document[]
   subscriptions      Subscription[]
+  invoices           Invoice[]
+  payments           Payment[]
+  subscriptionEvents SubscriptionEvent[]
   activityLogs       ActivityLog[]
   settings           CompanySetting[]
   aiFeatures         AiFeature[]
@@ -1402,24 +1436,31 @@ model Subscription {
   companyId             String
   planId                String
   userId                String
+  couponId              String?
   status                SubscriptionStatus @default(TRIALING)
   startDate             DateTime          @default(now())
   endDate               DateTime?
   trialEndsAt           DateTime?
   canceledAt            DateTime?
   autoRenew             Boolean            @default(true)
-  stripeSubscriptionId  String?            @unique
-  stripeCustomerId      String?
+  provider              PaymentProvider    @default(MANUAL)
+  providerSubscriptionId String?           @unique
+  providerCustomerId    String?
   metadata              Json?
   createdAt             DateTime           @default(now())
   updatedAt             DateTime           @updatedAt
 
-  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  plan    Plan    @relation(fields: [planId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+  company   Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plan      Plan         @relation(fields: [planId], references: [id])
+  user      User         @relation(fields: [userId], references: [id])
+  coupon    Coupon?      @relation(fields: [couponId], references: [id], onDelete: SetNull)
+  invoices  Invoice[]
+  payments  Payment[]
+  events    SubscriptionEvent[]
 
   @@index([companyId])
   @@index([status])
+  @@index([provider])
   @@map("subscriptions")
 }
 
@@ -1506,6 +1547,109 @@ model AiUsageLog {
   @@index([companyId])
   @@index([createdAt])
   @@map("ai_usage_logs")
+}
+
+// ============================================================
+// BILLING & SUBSCRIPTION MODELS
+// ============================================================
+
+model Invoice {
+  id             String        @id @default(cuid())
+  subscriptionId String
+  companyId      String
+  invoiceNo      String        @unique
+  status         InvoiceStatus @default(DRAFT)
+  amount         Decimal       @db.Decimal(14, 2)
+  taxAmount      Decimal?      @default(0) @db.Decimal(14, 2)
+  discountAmount Decimal?      @default(0) @db.Decimal(14, 2)
+  totalAmount    Decimal       @db.Decimal(14, 2)
+  currency       String        @default("USD")
+  description    String?
+  dueDate        DateTime?
+  paidAt         DateTime?
+  providerInvoiceId String?    @unique
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  payments     Payment[]
+
+  @@index([subscriptionId])
+  @@index([companyId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("invoices")
+}
+
+model Payment {
+  id             String         @id @default(cuid())
+  subscriptionId String
+  invoiceId      String?
+  companyId      String
+  provider       PaymentProvider @default(MANUAL)
+  providerPaymentId String?      @unique
+  amount         Decimal        @db.Decimal(14, 2)
+  currency       String         @default("USD")
+  status         PaymentStatus  @default(PENDING)
+  paymentMethod  String?
+  transactionId  String?
+  metadata       Json?
+  paidAt         DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  invoice      Invoice?     @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+  company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([invoiceId])
+  @@index([companyId])
+  @@index([status])
+  @@map("payments")
+}
+
+model Coupon {
+  id            String      @id @default(cuid())
+  code          String      @unique
+  type          CouponType  @default(PERCENTAGE)
+  value         Decimal     @db.Decimal(10, 2)
+  minPurchase   Decimal?    @db.Decimal(14, 2)
+  maxDiscount   Decimal?    @db.Decimal(14, 2)
+  validFrom     DateTime?
+  validUntil    DateTime?
+  usageLimit    Int?
+  usageCount    Int         @default(0)
+  status        CouponStatus @default(ACTIVE)
+  description   String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  subscriptions Subscription[]
+
+  @@index([code])
+  @@index([status])
+  @@map("coupons")
+}
+
+model SubscriptionEvent {
+  id             String               @id @default(cuid())
+  subscriptionId String
+  companyId      String
+  type           SubscriptionEventType
+  data           Json?
+  createdAt      DateTime             @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  company      Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([subscriptionId])
+  @@index([companyId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("subscription_events")
 }
 
 // ============================================================
