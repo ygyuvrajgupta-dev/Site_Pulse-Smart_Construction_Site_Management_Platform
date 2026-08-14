@@ -5,7 +5,7 @@ import {
   FiShield,
   FiGrid,
   FiBox,
-  FiPalette,
+  FiDroplet,
   FiSettings,
   FiEdit,
   FiBriefcase,
@@ -13,7 +13,7 @@ import {
   FiCreditCard,
   FiTag,
   FiBarChart2,
-  FiBuilding,
+  FiGlobe,
   FiCalendar,
   FiClock,
   FiTrello,
@@ -22,7 +22,7 @@ import {
   FiFileText,
   FiImage,
   FiPieChart,
-  FiBulb,
+  FiZap,
   FiThumbsUp,
   FiActivity,
 } from 'react-icons/fi';
@@ -40,7 +40,7 @@ export const AI_SIDEBAR = [
   { path: ROUTES.AI_REPORTS, icon: FiFileText, label: 'AI Reports' },
   { path: ROUTES.AI_OCR, icon: FiImage, label: 'AI OCR' },
   { path: ROUTES.AI_ANALYTICS, icon: FiPieChart, label: 'AI Analytics' },
-  { path: ROUTES.AI_INSIGHTS, icon: FiBulb, label: 'AI Insights' },
+  { path: ROUTES.AI_INSIGHTS, icon: FiZap, label: 'AI Insights' },
   { path: ROUTES.AI_SUGGESTIONS, icon: FiThumbsUp, label: 'AI Suggestions' },
   { path: ROUTES.AI_USAGE, icon: FiActivity, label: 'AI Usage' },
 ];
@@ -61,7 +61,7 @@ export const DASHBOARD_SIDEBAR = [
 // Platform Owner sidebar items
 export const PLATFORM_SIDEBAR = [
   { path: ROUTES.PLATFORM, icon: FiHome, label: 'Dashboard' },
-  { path: ROUTES.PLATFORM_COMPANIES, icon: FiBuilding, label: 'Companies' },
+  { path: ROUTES.PLATFORM_COMPANIES, icon: FiGlobe, label: 'Companies' },
   { path: ROUTES.PLATFORM_PLANS, icon: FiCreditCard, label: 'Plans' },
   { path: ROUTES.PLATFORM_SUBSCRIPTIONS, icon: FiUsers, label: 'Subscriptions' },
   { path: ROUTES.PLATFORM_COUPONS, icon: FiTag, label: 'Coupons' },
@@ -78,6 +78,6 @@ export const COMPANY_ADMIN_SIDEBAR = [
   { path: ROUTES.COMPANY_DEPARTMENTS, icon: FiGrid, label: 'Departments' },
   { path: ROUTES.COMPANY_PROFILE, icon: FiEdit, label: 'Company Profile' },
   { path: ROUTES.COMPANY_MODULES, icon: FiBox, label: 'Modules' },
-  { path: ROUTES.COMPANY_BRANDING, icon: FiPalette, label: 'Branding' },
+  { path: ROUTES.COMPANY_BRANDING, icon: FiDroplet, label: 'Branding' },
   { path: ROUTES.COMPANY_SETTINGS, icon: FiSettings, label: 'Settings' },
 ];

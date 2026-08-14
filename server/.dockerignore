@@ -1,0 +1,36 @@
+# Build artifacts — rebuilt inside the container
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files — injected at runtime via docker-compose env_file
+.env
+.env.*
+
+# Docker artifacts
+Dockerfile*
+.dockerignore
+.docker-compose*
+
+# CI / VCS
+.git
+.gitignore
+.github
+
+# Docs (not needed in image)
+*.md
+AI_ARCHITECTURE.md
+DATABASE_SCHEMA_EXPLAINED.md
+AUTH_IMPLEMENTATION.md
+README.md
+
+# DB files (local dev artefacts)
+prisma/*.db
+prisma/*.db-*
+prisma/generated
+
+# Runtime data
+uploads
+logs
+dist

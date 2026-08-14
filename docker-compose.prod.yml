@@ -1,0 +1,23 @@
+# ============================================================
+# SitePulse — Production overrides
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Adds: persistent uploads volume, explicit production env,
+# and a backend read-only filesystem mount for uploads.
+# ============================================================
+
+services:
+  backend:
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - uploads_data:/app/uploads
+
+  nginx:
+    # Serve a persistent uploads directory if any file-storage feature
+    # writes through the API (read-only from the edge is safe).
+    volumes:
+      - uploads_data:/app/uploads:ro
+
+volumes:
+  uploads_data:

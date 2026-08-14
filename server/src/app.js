@@ -18,6 +18,10 @@ import logger from "./config/logger.js";
 function configureApp(routes) {
   const app = express();
 
+  // Trust the reverse proxy (Nginx) so req.ip / req.protocol are correct
+  // and secure cookies work when COOKIE_SECURE=true.
+  app.set("trust proxy", env.isBehindProxy ? 1 : false);
+
   // ============================================
   // Security Middleware
   // ============================================

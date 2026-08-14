@@ -1,0 +1,69 @@
+# ============================================================
+# SitePulse — Production Docker Compose
+# Services: PostgreSQL, Backend (Node), Nginx (frontend + proxy)
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# All secrets are sourced from .env.production (edit it first!).
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # PostgreSQL database
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file: .env.production
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "sitepulse", "-d", "sitepulse"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - appnet
+
+  # ----------------------------------------------------------
+  # Backend API (Node + Express + Prisma)
+  # ----------------------------------------------------------
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file: .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    expose:
+      - "5000"            # internal only; Nginx is the public edge
+    networks:
+      - appnet
+
+  # ----------------------------------------------------------
+  # Frontend (Vite build) served by Nginx + API reverse proxy
+  # ----------------------------------------------------------
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+      args:
+        VITE_API_URL: /api
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  postgres_data:

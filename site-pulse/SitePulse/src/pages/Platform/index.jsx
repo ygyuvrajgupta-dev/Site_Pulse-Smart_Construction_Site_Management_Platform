@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { FiUsers, FiBuilding, FiCreditCard, FiDollarSign, FiTrendingUp, FiActivity } from 'react-icons/fi';
+import { FiUsers, FiBriefcase, FiCreditCard, FiDollarSign, FiTrendingUp, FiActivity } from 'react-icons/fi';
 import api from '@/services/axios';
 import { ROUTES } from '@/constants/routes';
 
@@ -21,7 +21,7 @@ function PlatformPage() {
     {
       title: 'Total Companies',
       value: stats?.totalCompanies || 0,
-      icon: FiBuilding,
+      icon: FiBriefcase,
       color: 'bg-blue-500',
     },
     {
@@ -100,7 +100,7 @@ function PlatformPage() {
             href={ROUTES.PLATFORM_COMPANIES}
             className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            <FiBuilding className="w-8 h-8 text-secondary mb-2" />
+            <FiBriefcase className="w-8 h-8 text-secondary mb-2" />
             <h3 className="font-medium text-gray-900 dark:text-white">Manage Companies</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">Create, suspend, or activate companies</p>
           </a>

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { getAiStatus, getAiUsage, getInsightStats, getSuggestionStats } from '@/services/aiService';
-import { FiCpu, FiMessageSquare, FiFileText, FiImage, FiPieChart, FiBulb, FiThumbsUp, FiCheckCircle, FiX } from 'react-icons/fi';
+import { FiCpu, FiMessageSquare, FiFileText, FiImage, FiPieChart, FiZap, FiThumbsUp, FiCheckCircle, FiX } from 'react-icons/fi';
 
 export default function AiOverview() {
   const [status, setStatus] = useState(null);
@@ -64,7 +64,7 @@ export default function AiOverview() {
     {
       title: 'AI Insights',
       description: 'Automated business insights and trend detection',
-      icon: FiBulb,
+      icon: FiZap,
       path: '/ai/insights',
       color: 'bg-yellow-500',
     },

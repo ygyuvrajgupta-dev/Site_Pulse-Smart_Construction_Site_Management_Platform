@@ -1,0 +1,17 @@
+# ============================================================
+# SitePulse — Development override
+# Hot-reloads the backend; Nginx still serves the built SPA.
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml up
+# ============================================================
+
+services:
+  backend:
+    # nodemon watches /app/src mounted from ./server/src
+    volumes:
+      - ./server/src:/app/src
+      - ./server/prisma:/app/prisma
+      - ./server/uploads:/app/uploads
+    command: ["npm", "run", "dev"]
+    environment:
+      - NODE_ENV=development
+    # Skip the migrate-on-start command in dev; run manually.

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FiPlus, FiSearch, FiTrash2, FiEdit, FiBan, FiCheck } from 'react-icons/fi';
+import { FiPlus, FiSearch, FiTrash2, FiEdit, FiXCircle, FiCheck } from 'react-icons/fi';
 import api from '@/services/axios';
 import { ROUTES } from '@/constants/routes';
 
@@ -172,7 +172,7 @@ function PlatformCompaniesPage() {
                               className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
                               title="Suspend"
                             >
-                              <FiBan className="w-4 h-4" />
+                              <FiXCircle className="w-4 h-4" />
                             </button>
                           ) : (
                             <button

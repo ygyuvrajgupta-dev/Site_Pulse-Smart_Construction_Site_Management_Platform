@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { FiUsers, FiBuilding, FiCreditCard, FiDollarSign, FiTrendingUp, FiActivity } from 'react-icons/fi';
+import { FiUsers, FiBriefcase, FiCreditCard, FiDollarSign, FiTrendingUp, FiActivity } from 'react-icons/fi';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,7 +12,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Bar } from 'react-chartjs-js';
+import { Bar } from 'react-chartjs-2';
 import api from '@/services/axios';
 import { ROUTES } from '@/constants/routes';
 
@@ -94,7 +94,7 @@ function PlatformAnalyticsPage() {
                 {analytics?.companies?.total || 0}
               </p>
             </div>
-            <FiBuilding className="w-8 h-8 text-blue-500" />
+            <FiBriefcase className="w-8 h-8 text-blue-500" />
           </div>
           <div className="mt-2 flex items-center text-sm">
             <FiTrendingUp className="w-4 h-4 text-green-500 mr-1" />

@@ -1,0 +1,17 @@
+# Environment variables — ignore all real env files but keep the committed template
+.env
+.env.*
+!.env.production.example
+
+# Node / build artifacts
+node_modules/
+dist/
+*.pid*
+
+# Runtime data
+logs/
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db

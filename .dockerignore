@@ -1,0 +1,32 @@
+# Git / VCS
+.git
+.gitignore
+.github
+
+# Node
+node_modules
+server/node_modules
+site-pulse/SitePulse/node_modules
+
+# Docker
+Dockerfile*
+.dockerignore
+*.pid
+
+# Env files (passed in at runtime)
+.env
+.env.*
+
+# Docs are not needed in any image
+*.md
+AI_ARCHITECTURE.md
+DATABASE_SCHEMA_EXPLAINED.md
+AUTH_IMPLEMENTATION.md
+README.md
+
+# Local runtime data
+uploads
+logs
+dist
+prisma/*.db
+prisma/*.db-*

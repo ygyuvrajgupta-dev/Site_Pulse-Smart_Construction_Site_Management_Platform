@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { generateInsights, listInsights, markInsightRead, dismissInsight, getInsightStats } from '@/services/aiService';
-import { FiBulb, FiRefreshCw, FiCheck, FiX, FiAlertTriangle } from 'react-icons/fi';
+import { FiZap, FiRefreshCw, FiCheck, FiX, FiAlertTriangle } from 'react-icons/fi';
 
 const SEVERITY_COLORS = {
   INFO: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
@@ -58,7 +58,7 @@ export default function AiInsights() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            <FiBulb className="inline mr-3" /> AI Insights
+            <FiZap className="inline mr-3" /> AI Insights
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">Automated business insights and trend detection</p>
         </div>
@@ -67,7 +67,7 @@ export default function AiInsights() {
             <FiRefreshCw size={16} /> Refresh
           </button>
           <button onClick={handleGenerate} disabled={generating} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 disabled:opacity-50">
-            <FiBulb size={16} /> {generating ? 'Generating...' : 'Generate Insights'}
+            <FiZap size={16} /> {generating ? 'Generating...' : 'Generate Insights'}
           </button>
         </div>
       </div>
@@ -127,7 +127,7 @@ export default function AiInsights() {
           ))}
           {insights.length === 0 && !loading && (
             <div className="text-center py-12 text-gray-400">
-              <FiBulb size={48} className="mx-auto mb-4" />
+              <FiZap size={48} className="mx-auto mb-4" />
               <p>No insights yet. Click "Generate Insights" to analyze your business data.</p>
             </div>
           )}

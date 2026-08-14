@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   FiBox, FiGrid, FiHome, FiTrendingUp, FiShoppingCart,
-  FiTruck, FiBarcode, FiQrCode, FiPlus, FiSearch
+  FiTruck, FiTag, FiMaximize2, FiPlus, FiSearch
 } from 'react-icons/fi';
 import api from '@/services/axios';
 import ExportButton from '@/components/common/ExportButton';
@@ -20,8 +20,8 @@ function InventoryPage() {
     { id: 'stock', label: 'Stock', icon: FiTrendingUp },
     { id: 'purchase-orders', label: 'Purchase Orders', icon: FiShoppingCart },
     { id: 'suppliers', label: 'Suppliers', icon: FiTruck },
-    { id: 'barcode', label: 'Barcode', icon: FiBarcode },
-    { id: 'qr-code', label: 'QR Code', icon: FiQrCode },
+    { id: 'barcode', label: 'Barcode', icon: FiTag },
+    { id: 'qr-code', label: 'QR Code', icon: FiMaximize2 },
   ];
 
   return (
@@ -471,13 +471,13 @@ function SuppliersTab() {
 function BarcodeTab() {
   return (
     <div className="card text-center py-12">
-      <FiBarcode className="w-16 h-16 mx-auto mb-4 text-secondary opacity-50" />
+      <FiTag className="w-16 h-16 mx-auto mb-4 text-secondary opacity-50" />
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Barcode Scanner</h3>
       <p className="text-gray-500 dark:text-gray-400 mb-4">
         Scan product barcodes to quickly look up inventory items
       </p>
       <button className="btn btn-primary">
-        <FiBarcode className="w-4 h-4" />
+        <FiTag className="w-4 h-4" />
         Start Scanning
       </button>
     </div>
@@ -487,13 +487,13 @@ function BarcodeTab() {
 function QrCodeTab() {
   return (
     <div className="card text-center py-12">
-      <FiQrCode className="w-16 h-16 mx-auto mb-4 text-secondary opacity-50" />
+      <FiMaximize2 className="w-16 h-16 mx-auto mb-4 text-secondary opacity-50" />
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">QR Code Generator</h3>
       <p className="text-gray-500 dark:text-gray-400 mb-4">
         Generate QR codes for products to enable quick mobile scanning
       </p>
       <button className="btn btn-primary">
-        <FiQrCode className="w-4 h-4" />
+        <FiMaximize2 className="w-4 h-4" />
         Generate QR Code
       </button>
     </div>

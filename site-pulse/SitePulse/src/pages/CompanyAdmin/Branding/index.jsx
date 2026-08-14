@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FiSave, FiPalette, FiRefreshCw } from 'react-icons/fi';
+import { FiSave, FiDroplet, FiRefreshCw } from 'react-icons/fi';
 import api from '@/services/axios';
 import { ROUTES } from '@/constants/routes';
 

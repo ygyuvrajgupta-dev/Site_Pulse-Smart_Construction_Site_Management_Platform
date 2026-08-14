@@ -58,8 +58,11 @@ const env = {
   ),
   rateLimitMax: parseInt(process.env.RATE_LIMIT_MAX || "100", 10),
 
-  // Cookie
+      // Cookie / Proxy
   cookieSecret: process.env.COOKIE_SECRET || process.env.JWT_SECRET,
+  cookieSecure: process.env.COOKIE_SECURE === "true",
+  isBehindProxy: process.env.TRUST_PROXY === "true",
+
 
   // Logging
   logLevel: process.env.LOG_LEVEL || "debug",
