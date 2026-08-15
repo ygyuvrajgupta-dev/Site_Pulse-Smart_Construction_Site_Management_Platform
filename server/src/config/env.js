@@ -78,6 +78,7 @@ const env = {
   emailUser: process.env.EMAIL_USER,
   emailPass: process.env.EMAIL_PASS,
   emailFrom: process.env.EMAIL_FROM || "noreply@sitepulse.com",
+  resendApiKey: process.env.RESEND_API_KEY,
 
   // Frontend
   frontendUrl: process.env.FRONTEND_URL || "http://localhost:5173",
@@ -97,6 +98,13 @@ const env = {
     temperature: parseFloat(process.env.AI_TEMPERATURE || "0.7"),
     timeoutMs: parseInt(process.env.AI_TIMEOUT_MS || "30000", 10),
     enableUsageTracking: process.env.AI_ENABLE_USAGE_TRACKING !== "false",
+  },
+
+  // Cloudinary (media / file uploads — signed client uploads)
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
   },
 
   // Billing & Payments

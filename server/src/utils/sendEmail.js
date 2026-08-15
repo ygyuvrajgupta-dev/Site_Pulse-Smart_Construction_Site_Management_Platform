@@ -16,7 +16,7 @@ class EmailService {
    */
   initialize() {
     try {
-      this.transporter = nodemailer.createTransporter({
+      this.transporter = nodemailer.createTransport({
         host: env.emailHost,
         port: env.emailPort,
         secure: env.emailSecure,
