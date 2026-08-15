@@ -1,9 +1,8 @@
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
+import SuspenseWrapper from './SuspenseWrapper';
 import { Routes, Route } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import ProtectedRoute from './ProtectedRoute';
-import PublicRoute from './PublicRoute';
-import LoadingScreen from '@/components/common/LoadingScreen';
 
 // ============================================
 // Lazy-loaded pages with code splitting.
@@ -87,17 +86,6 @@ const CrmClientsPage = lazy(() => import('@/pages/CRM/Clients/index.jsx'));
 const CrmPipelinePage = lazy(() => import('@/pages/CRM/Pipeline/index.jsx'));
 const CrmMeetingsPage = lazy(() => import('@/pages/CRM/Meetings/index.jsx'));
 const CrmFollowUpsPage = lazy(() => import('@/pages/CRM/FollowUps/index.jsx'));
-
-/**
- * Suspense wrapper for lazy-loaded components.
- */
-function SuspenseWrapper({ children }) {
-  return (
-    <Suspense fallback={<LoadingScreen />}>
-      {children}
-    </Suspense>
-  );
-}
 
 /**
  * Application route structure with lazy loading and route guards.

@@ -53,12 +53,23 @@ apiClient.interceptors.response.use(
 
       switch (status) {
         case 401: {
-          // Session expired or invalid token
-          localStorage.removeItem('user');
-          localStorage.removeItem('redirectAfterLogin');
-          // Only redirect if we're not already on the login page
-          if (window.location.pathname !== '/login') {
-            window.location.href = '/login';
+          // Demo sessions have no real JWT and must not be logged out.
+          let isDemo = false;
+          try {
+            const stored = JSON.parse(localStorage.getItem('user') || 'null');
+            isDemo = Boolean(stored && stored.demo);
+          } catch {
+            isDemo = false;
+          }
+
+          if (!isDemo) {
+            // Session expired or invalid token
+            localStorage.removeItem('user');
+            localStorage.removeItem('redirectAfterLogin');
+            // Only redirect if we're not already on the login page
+            if (window.location.pathname !== '/login') {
+              window.location.href = '/login';
+            }
           }
           break;
         }
