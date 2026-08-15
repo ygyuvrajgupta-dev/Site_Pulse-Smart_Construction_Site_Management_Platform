@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { hashPassword, comparePassword } from '../utils/hashPassword.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/generateToken.js';
 import { AppError } from '../middleware/errorHandler.js';
-import prisma from '../config/db.js';
+import { prisma } from '../config/db.js';
 import sendEmail from '../utils/sendEmail.js';
 
 /**

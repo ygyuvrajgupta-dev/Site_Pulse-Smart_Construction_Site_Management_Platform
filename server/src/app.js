@@ -52,8 +52,11 @@ function configureApp(routes) {
 
   app.use(cors(corsOptions));
 
-  // Handle preflight requests
-  app.options("*", cors(corsOptions));
+    // Handle preflight requests.
+  // NOTE: Express 5 ships path-to-regexp v8, which rejects a bare "*" path
+  // ("Missing parameter name"). A RegExp is matched by the router directly
+  // without invoking the path-to-regexp compiler, so it is version-agnostic.
+  app.options(/.*/, cors(corsOptions));
 
   // ============================================
   // Body Parsing Middleware

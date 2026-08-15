@@ -85,4 +85,19 @@ function sendPaginated(res, { message, data, page, limit, total, statusCode = 20
   });
 }
 
-export { sendSuccess, sendError, sendPaginated };
+/**
+ * Backwards-compatible `response` namespace object.
+ *
+ * Many legacy controllers/services import a named `response` and call it with
+ * a positional signature, e.g. `response.success(res, data, 'message', 201)`.
+ * This namespace maps that positional API onto the object-based helpers above
+ * so the rest of the codebase works without per-file rewrites.
+ */
+const response = {
+  success: (res, data, message = 'Success', statusCode = 200, meta) =>
+    sendSuccess(res, { message, data, statusCode, meta }),
+  error: (res, message = 'Server Error', statusCode = 500) =>
+    sendError(res, { message, statusCode }),
+};
+
+export { sendSuccess, sendError, sendPaginated, response };

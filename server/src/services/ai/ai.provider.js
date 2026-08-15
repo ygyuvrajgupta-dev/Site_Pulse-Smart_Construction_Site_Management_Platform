@@ -48,6 +48,8 @@ import { AppError } from "../../middleware/errorHandler.js";
  * @returns {{ apiKey: string, model: string }}
  */
 function resolveProviderConfig(provider, model) {
+  // Normalize provider name (case-insensitive) so "OPENAI", "Openai", etc. all work
+  const normalizedProvider = String(provider || "").toLowerCase();
   const configs = {
     openai: {
       apiKey: env.ai.openaiApiKey,
@@ -67,7 +69,7 @@ function resolveProviderConfig(provider, model) {
     },
   };
 
-  const config = configs[provider];
+    const config = configs[normalizedProvider];
   if (!config) {
     throw new AppError(`Unsupported AI provider: ${provider}`, 400);
   }
@@ -365,7 +367,7 @@ const providers = {
  * @returns {Promise<AiCompletionResponse>}
  */
 export async function generateCompletion(request) {
-  const provider = request.provider || env.ai.defaultProvider;
+    const provider = String(request.provider || env.ai.defaultProvider).toLowerCase();
 
   if (!providers[provider]) {
     throw new AppError(`Unsupported AI provider: ${provider}`, 400);

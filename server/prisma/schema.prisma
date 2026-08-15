@@ -8,7 +8,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+    provider = "postgresql"
+  // Connection URL lives in prisma.config.ts (Prisma 7). Runtime uses the
+  // PrismaPg driver adapter in src/config/db.js, so no `url` is needed here.
 }
 
 // ============================================================

@@ -7,7 +7,7 @@ import {
   getAllCompanies,
   getCompanyById,
   updateCompany,
-} from "../contoller/company.controller.js";
+} from "../contoller/platform.controller.js";
 import {
   createPlan,
   updatePlan,
