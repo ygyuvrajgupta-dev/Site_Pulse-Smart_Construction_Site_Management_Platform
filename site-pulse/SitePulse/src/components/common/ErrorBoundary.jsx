@@ -21,15 +21,6 @@ class ErrorBoundary extends Component {
   componentDidCatch(error, errorInfo) {
     // Log error to console (in production, send to error reporting service)
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    // Serializable stack capture (headless diagnostics + production debugging)
-    console.error(
-      '[EB] msg=' +
-        (error && error.message) +
-        ' | jsStack=' +
-        (error && error.stack) +
-        ' | compStack=' +
-        (errorInfo && errorInfo.componentStack)
-    );
   }
 
   render() {

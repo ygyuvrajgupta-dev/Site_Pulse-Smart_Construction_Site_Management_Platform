@@ -3,6 +3,7 @@ import SuspenseWrapper from './SuspenseWrapper';
 import { Routes, Route } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import ProtectedRoute from './ProtectedRoute';
+import PublicRoute from './PublicRoute';
 
 // ============================================
 // Lazy-loaded pages with code splitting.
@@ -57,6 +58,7 @@ const NotFoundPage = lazy(() => import('@/pages/NotFound/index.jsx'));
 const LandingLayout = lazy(() => import('@/layouts/LandingLayout.jsx'));
 const AuthLayout = lazy(() => import('@/layouts/AuthLayout.jsx'));
 const DashboardLayout = lazy(() => import('@/layouts/DashboardLayout.jsx'));
+const AiLayout = lazy(() => import('@/layouts/AiLayout.jsx'));
 const PlatformLayout = lazy(() => import('@/layouts/PlatformLayout.jsx'));
 const CompanyAdminLayout = lazy(() => import('@/layouts/CompanyAdminLayout.jsx'));
 
@@ -158,7 +160,24 @@ function AppRoutes() {
         <Route path={ROUTES.SECURITY} element={<SettingsPage />} />
         <Route path={ROUTES.BILLING} element={<SettingsPage />} />
         
-        {/* AI routes */}
+        {/* CRM routes */}
+        <Route path={ROUTES.CRM_LEADS} element={<CrmLeadsPage />} />
+        <Route path={ROUTES.CRM_CLIENTS} element={<CrmClientsPage />} />
+        <Route path={ROUTES.CRM_PIPELINE} element={<CrmPipelinePage />} />
+        <Route path={ROUTES.CRM_MEETINGS} element={<CrmMeetingsPage />} />
+        <Route path={ROUTES.CRM_FOLLOWUPS} element={<CrmFollowUpsPage />} />
+      </Route>
+
+      {/* Protected AI routes */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <SuspenseWrapper>
+              <AiLayout />
+            </SuspenseWrapper>
+          </ProtectedRoute>
+        }
+      >
         <Route path={ROUTES.AI} element={<AiOverviewPage />} />
         <Route path={ROUTES.AI_CHAT} element={<AiChatPage />} />
         <Route path={ROUTES.AI_REPORTS} element={<AiReportsPage />} />
@@ -167,13 +186,6 @@ function AppRoutes() {
         <Route path={ROUTES.AI_INSIGHTS} element={<AiInsightsPage />} />
         <Route path={ROUTES.AI_SUGGESTIONS} element={<AiSuggestionsPage />} />
         <Route path={ROUTES.AI_USAGE} element={<AiUsagePage />} />
-        
-        {/* CRM routes */}
-        <Route path={ROUTES.CRM_LEADS} element={<CrmLeadsPage />} />
-        <Route path={ROUTES.CRM_CLIENTS} element={<CrmClientsPage />} />
-        <Route path={ROUTES.CRM_PIPELINE} element={<CrmPipelinePage />} />
-        <Route path={ROUTES.CRM_MEETINGS} element={<CrmMeetingsPage />} />
-        <Route path={ROUTES.CRM_FOLLOWUPS} element={<CrmFollowUpsPage />} />
       </Route>
 
       {/* Protected platform owner routes */}

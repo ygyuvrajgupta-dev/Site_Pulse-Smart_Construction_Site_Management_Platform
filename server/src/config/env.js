@@ -98,6 +98,7 @@ const env = {
     temperature: parseFloat(process.env.AI_TEMPERATURE || "0.7"),
     timeoutMs: parseInt(process.env.AI_TIMEOUT_MS || "30000", 10),
     enableUsageTracking: process.env.AI_ENABLE_USAGE_TRACKING !== "false",
+    mockEnabled: process.env.AI_MOCK_ENABLED !== "false",
   },
 
   // Cloudinary (media / file uploads — signed client uploads)

@@ -69,7 +69,15 @@ function resolveProviderConfig(provider, model) {
     },
   };
 
-    const config = configs[normalizedProvider];
+  // The mock provider never requires an API key (used for local dev/demo).
+  if (normalizedProvider === "mock") {
+    return {
+      apiKey: "",
+      model: model || "mock-simulated-1",
+    };
+  }
+
+  const config = configs[normalizedProvider];
   if (!config) {
     throw new AppError(`Unsupported AI provider: ${provider}`, 400);
   }
@@ -352,6 +360,116 @@ async function callMistral(request) {
 }
 
 /**
+ * Call the local mock provider.
+ * Returns realistic simulated responses so all AI features can be
+ * tested end-to-end without external API keys (dev/demo mode).
+ * @param {AiCompletionRequest} request
+ * @returns {Promise<AiCompletionResponse>}
+ */
+async function callMock(request) {
+  const { model } = resolveProviderConfig("mock", request.model);
+  const startTime = Date.now();
+
+  // Build a context-aware simulated response.
+  const prompt = (request.prompt || "").toLowerCase();
+  const lastUserMsg =
+    request.messages?.filter((m) => m.role === "user").pop()?.content || prompt;
+
+  let text = "";
+
+  // Chat
+  if (request.system && /chat|assistant|business questions/i.test(request.system)) {
+    text =
+      `Here is a helpful response to: "${lastUserMsg}".\n\n` +
+      `This is a simulated reply from the demo AI provider. To enable ` +
+      `real AI responses, set an OpenAI, Anthropic, Google, or Mistral API ` +
+      `key in the server .env file.`;
+  }
+  // OCR → JSON object
+  else if (request.system && /ocr|optical character/i.test(request.system)) {
+    text =
+      `{\n` +
+      `  "extractedText": "Simulated OCR text extracted from the uploaded document. Configure a real AI provider for actual text extraction.",\n` +
+      `  "documentType": "REPORT",\n` +
+      `  "structuredData": { "vendor": "Demo Vendor", "amount": 1240.0, "currency": "USD", "date": "2026-08-01" },\n` +
+      `  "confidence": 0.87,\n` +
+      `  "language": "en"\n` +
+      `}`;
+  }
+  // Reports
+  else if (request.system && /report/i.test(request.system)) {
+    const type = /finance|cost|expense/i.test(prompt) ? "Finance" : /inventory|stock/i.test(prompt) ? "Inventory" : /hr|employee|staff/i.test(prompt) ? "HR" : /sales|lead|revenue/i.test(prompt) ? "Sales" : /project|site/i.test(prompt) ? "Project" : "Business";
+    text =
+      `# ${type} Report (Simulated)\n\n` +
+      `## Executive Summary\n` +
+      `This simulated report provides a high-level overview of the ${type.toLowerCase()} ` +
+      `activity for the current period. Figures are placeholder data generated in demo mode.\n\n` +
+      `## Key Metrics\n` +
+      `- Total volume: 124 units\n` +
+      `- Total value: $58,400.00\n` +
+      `- Active records: 18\n` +
+      `- Pending items: 4\n\n` +
+      `## Highlights\n` +
+      `1. Consistent activity across the period with a moderate upward trend.\n` +
+      `2. Two items require attention and follow-up.\n` +
+      `3. Overall health remains stable.\n\n` +
+      `## Recommendations\n` +
+      `- Review pending items and schedule follow-ups.\n` +
+      `- Consider consolidating duplicate records.\n` +
+      `- Run a full analysis once a real AI provider is configured.`;
+  }
+  // Suggestions → JSON array
+  else if (request.system && /suggestion/i.test(request.system)) {
+    text =
+      `[\n` +
+      `  { "type": "OPTIMIZATION", "title": "Follow up with high-value leads", "description": "Contact the most engaged leads within 48 hours to improve conversion. This is a simulated suggestion.", "entityType": "LEAD", "entityId": null },\n` +
+      `  { "type": "WARNING", "title": "Review at-risk project timelines", "description": "Several projects are close to their deadline. Schedule a status review and reallocate resources if needed. This is a simulated suggestion.", "entityType": "PROJECT", "entityId": null },\n` +
+      `  { "type": "ACTION", "title": "Reconcile inventory stock levels", "description": "Compare on-hand quantities with recent purchase orders and flag discrepancies. This is a simulated suggestion.", "entityType": "INVENTORY", "entityId": null },\n` +
+      `  { "type": "RECOMMENDATION", "title": "Schedule a quarterly performance review", "description": "Bring key stakeholders together to review progress and align on next quarter goals. This is a simulated suggestion.", "entityType": "GENERAL", "entityId": null }\n` +
+      `]`;
+  }
+  // Insights → JSON array
+  else if (request.system && /insight/i.test(request.system)) {
+    text =
+      `[\n` +
+      `  { "type": "TREND", "severity": "MEDIUM", "title": "Revenue trending upward", "description": "Overall business activity shows a moderate upward trend over the current period. This is a simulated insight.", "entityType": "FINANCE", "entityId": null },\n` +
+      `  { "type": "OPPORTUNITY", "severity": "LOW", "title": "Automation opportunity in documents", "description": "Document processing can be automated to reduce manual effort. This is a simulated insight.", "entityType": "GENERAL", "entityId": null },\n` +
+      `  { "type": "ANOMALY", "severity": "HIGH", "title": "A few items require attention", "description": "Two pending items may need follow-up to avoid delays. This is a simulated insight.", "entityType": "TASK", "entityId": null },\n` +
+      `  { "type": "PERFORMANCE", "severity": "LOW", "title": "Overall health is stable", "description": "Key business metrics remain within expected ranges. This is a simulated insight.", "entityType": "GENERAL", "entityId": null }\n` +
+      `]`;
+  }
+  // Analytics → text analysis
+  else if (request.system && /analytics/i.test(request.system)) {
+    text =
+      `Analysis for: "${lastUserMsg}"\n\n` +
+      `Based on the available company data (simulated):\n` +
+      `- Revenue is trending upward by roughly 8% over the last 30 days.\n` +
+      `- Operating expenses remain within budget.\n` +
+      `- Two high-value opportunities are currently in the pipeline.\n\n` +
+      `Next step: configure a real AI provider for deeper, live analysis.`;
+  }
+  // OCR fallback / generic
+  else {
+    text =
+      `SIMULATED_RESPONSE: ${lastUserMsg}\n\n` +
+      `This response was generated by the built-in mock provider for local testing. ` +
+      `Set OPENAI_API_KEY (or another provider key) in server/.env to enable live AI.`;
+  }
+
+  // Simulate a short processing delay.
+  await new Promise((resolve) => setTimeout(resolve, 150));
+
+  return {
+    text,
+    model,
+    provider: "mock",
+    tokensIn: Math.ceil((lastUserMsg || "").length / 4) || 1,
+    tokensOut: Math.ceil(text.length / 4),
+    durationMs: Date.now() - startTime,
+  };
+}
+
+/**
  * Provider dispatch map.
  */
 const providers = {
@@ -359,15 +477,33 @@ const providers = {
   anthropic: callAnthropic,
   google: callGoogle,
   mistral: callMistral,
+  mock: callMock,
 };
 
 /**
  * Main entry point — generate a completion using the configured provider.
+ * Automatically falls back to the local mock provider when a real provider
+ * is requested but its API key is not configured (dev/demo mode).
  * @param {AiCompletionRequest} request
  * @returns {Promise<AiCompletionResponse>}
  */
 export async function generateCompletion(request) {
-    const provider = String(request.provider || env.ai.defaultProvider).toLowerCase();
+  const requestedProvider = String(request.provider || env.ai.defaultProvider).toLowerCase();
+  let provider = requestedProvider;
+
+  // If the requested real provider has no API key configured, fall back to mock.
+  const configs = {
+    openai: env.ai.openaiApiKey,
+    anthropic: env.ai.anthropicApiKey,
+    google: env.ai.googleApiKey,
+    mistral: env.ai.mistralApiKey,
+  };
+  if (providers[requestedProvider] && requestedProvider !== "mock" && !configs[requestedProvider]) {
+    provider = "mock";
+    logger.info(
+      `AI provider "${requestedProvider}" has no API key. Falling back to mock provider (demo mode).`
+    );
+  }
 
   if (!providers[provider]) {
     throw new AppError(`Unsupported AI provider: ${provider}`, 400);
@@ -400,6 +536,8 @@ export async function generateCompletion(request) {
 
 /**
  * Check if any AI provider is configured.
+ * The mock provider is always available for local dev/demo, so this returns true
+ * even without external API keys.
  * @returns {boolean}
  */
 export function isAiConfigured() {
@@ -407,12 +545,14 @@ export function isAiConfigured() {
     env.ai.openaiApiKey ||
     env.ai.anthropicApiKey ||
     env.ai.googleApiKey ||
-    env.ai.mistralApiKey
+    env.ai.mistralApiKey ||
+    env.ai.mockEnabled !== false
   );
 }
 
 /**
  * Get the list of configured providers.
+ * Includes the always-available "mock" provider when no real key is set.
  * @returns {string[]}
  */
 export function getConfiguredProviders() {
@@ -421,6 +561,9 @@ export function getConfiguredProviders() {
   if (env.ai.anthropicApiKey) configured.push("anthropic");
   if (env.ai.googleApiKey) configured.push("google");
   if (env.ai.mistralApiKey) configured.push("mistral");
+  if (configured.length === 0 && env.ai.mockEnabled !== false) {
+    configured.push("mock");
+  }
   return configured;
 }
 
