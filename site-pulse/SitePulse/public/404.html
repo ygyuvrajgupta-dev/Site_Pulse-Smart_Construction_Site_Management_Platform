@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SitePulse | Redirecting…</title>
+    <script>
+      // GitHub Pages SPA fallback.
+      // Unknown paths are served this file (404.html); redirect to the app
+      // root so React Router can handle client-side navigation.
+      (function () {
+        var base = '/Site_Pulse-Smart_Construction_Site_Management_Platform';
+        var rest = window.location.pathname.slice(base.length);
+        if (rest && rest.charAt(0) === '/') {
+          history.replaceState(null, '', base + '/');
+        } else {
+          history.replaceState(null, '', base + '/');
+        }
+        window.location.replace(base + '/');
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

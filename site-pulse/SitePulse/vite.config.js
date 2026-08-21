@@ -7,12 +7,20 @@ import { fileURLToPath } from 'url'
 // https://vite.dev/config/
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Public base path for GitHub Pages deployment.
+// The repo is served under this path on Pages; the Vite build must
+// prefix all asset URLs with it so the site loads at the sub-path.
+const GITHUB_PAGES_BASE = '/Site_Pulse-Smart_Construction_Site_Management_Platform/'
+
 export default defineConfig(({ mode }) => {
   const isServe = mode === 'development'
   const isProduction = mode === 'production'
 
   return {
     plugins: [react(), tailwindcss()],
+    // In production (GitHub Pages) use the repo sub-path as the base.
+    // In development keep root serving so localhost:5173 still works.
+    base: isProduction ? GITHUB_PAGES_BASE : '/',
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
