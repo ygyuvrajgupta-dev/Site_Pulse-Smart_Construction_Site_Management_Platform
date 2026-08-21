@@ -1,368 +1,172 @@
-import { response } from '../utils/response.js';
-import { AppError } from '../middleware/errorHandler.js';
-import prisma from '../config/db.js';
+﻿import { response } from "../utils/response.js";
+import { AppError } from "../middleware/errorHandler.js";
+import prisma from "../config/db.js";
 
 /**
- * Get all leads for a company
- * Supports filtering by status, pipeline stage, and search
+ * CRM Lead service implemented against the actual Prisma Lead/Client models.
+ * Lead  -> { firstName, lastName, email, phone, companyName, jobTitle, source,
+ *            status, score, budget, notes, assignedToId, convertedToClientId }
+ * Client-> { name, email, phone, website, address, city, state, country,
+ *            postalCode, taxId, notes, isActive, leadId }
+ * The frontend sends a flat shape ({ name, company, estimatedValue, ... }); the
+ * helpers below map it onto the persisted model so only `name` is required.
  */
+
+const VALID_SOURCES = ["WEBSITE","REFERRAL","SOCIAL_MEDIA","EMAIL_CAMPAIGN","COLD_CALL","PARTNER","OTHER"];
+const VALID_STATUSES = ["NEW","CONTACTED","QUALIFIED","PROPOSAL","NEGOTIATION","WON","LOST","DISQUALIFIED"];
+
+function splitName(name) {
+  const full = String(name || "").trim();
+  if (!full) return { firstName: "", lastName: "" };
+  const space = full.indexOf(" ");
+  if (space === -1) return { firstName: full, lastName: "" };
+  return { firstName: full.slice(0, space).trim(), lastName: full.slice(space + 1).trim() };
+}
+
+function normalizeSource(source) {
+  const s = String(source || "").toUpperCase();
+  const mapped = { SOCIAL: "SOCIAL_MEDIA", EVENT: "OTHER" }[s] || s;
+  return VALID_SOURCES.includes(mapped) ? mapped : "WEBSITE";
+}
+
+function normalizeStatus(status) {
+  const s = String(status || "").toUpperCase();
+  return VALID_STATUSES.includes(s) ? s : "NEW";
+}
+
+function buildLeadData(body, withCompanyId) {
+  const { firstName, lastName } = splitName(body.name);
+  const data = {};
+  if (withCompanyId) data.companyId = body.companyId;
+  data.firstName = firstName;
+  data.lastName = lastName;
+  if (body.email !== undefined) data.email = body.email || null;
+  if (body.phone !== undefined) data.phone = body.phone || null;
+  if (body.company !== undefined) data.companyName = body.company || null;
+  if (body.jobTitle !== undefined) data.jobTitle = body.jobTitle || null;
+  if (body.source !== undefined) data.source = normalizeSource(body.source);
+  if (body.status !== undefined) data.status = normalizeStatus(body.status);
+  if (body.assignedToId !== undefined) data.assignedToId = body.assignedToId || null;
+  if (body.estimatedValue !== undefined && body.estimatedValue !== null && body.estimatedValue !== "") {
+    data.budget = parseFloat(body.estimatedValue);
+  }
+  if (body.description !== undefined) data.notes = body.description || null;
+  return data;
+}
+
+const leadListSelect = {
+  id: true, firstName: true, lastName: true, email: true, phone: true,
+  companyName: true, jobTitle: true, source: true, status: true,
+  budget: true, score: true, createdAt: true, updatedAt: true,
+  convertedToClientId: true,
+  assignedTo: { select: { id: true, name: true, email: true } },
+};
+
+/** Get all leads for a company (pagination, search, status). */
 export async function getLeads(req, res, next) {
   try {
     const companyId = req.user.companyId;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const search = req.query.search || '';
+    const search = (req.query.search || "").trim();
     const status = req.query.status;
-    const stageId = req.query.stageId;
     const assignedToId = req.query.assignedToId;
-
     const skip = (page - 1) * limit;
     const where = { companyId };
-
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
-        { company: { contains: search, mode: 'insensitive' } },
-        { phone: { contains: search, mode: 'insensitive' } },
-      ];
-    }
-
-    if (status) {
-      where.status = status;
-    }
-
-    if (stageId) {
-      where.stageId = stageId;
-    }
-
-    if (assignedToId) {
-      where.assignedToId = assignedToId;
-    }
-
+    if (search) where.OR = [
+      { firstName: { contains: search, mode: "insensitive" } },
+      { lastName: { contains: search, mode: "insensitive" } },
+      { companyName: { contains: search, mode: "insensitive" } },
+      { email: { contains: search, mode: "insensitive" } },
+      { phone: { contains: search, mode: "insensitive" } },
+    ];
+    if (status && VALID_STATUSES.includes(String(status).toUpperCase())) where.status = status;
+    if (assignedToId) where.assignedToId = assignedToId;
     const [leads, total] = await Promise.all([
-      prisma.lead.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          stage: true,
-          assignedTo: {
-            select: { id: true, name: true, email: true },
-          },
-          _count: {
-            select: {
-              notes: true,
-              files: true,
-              meetings: true,
-              followUps: true,
-            },
-          },
-        },
-      }),
+      prisma.lead.findMany({ where, skip, take: limit, orderBy: { createdAt: "desc" }, select: leadListSelect }),
       prisma.lead.count({ where }),
     ]);
-
-    return response.success(res, {
-      leads,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
+    return response.success(res, { leads, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
+  } catch (error) { next(error); }
 }
 
-/**
- * Get lead by ID with full details
- */
+/** Get a single lead by ID. */
 export async function getLeadById(req, res, next) {
   try {
     const { id } = req.params;
     const companyId = req.user.companyId;
-
     const lead = await prisma.lead.findFirst({
       where: { id, companyId },
       include: {
-        stage: true,
-        assignedTo: {
-          select: { id: true, name: true, email: true, avatar: true },
-        },
-        notes: {
-          orderBy: { createdAt: 'desc' },
-          include: {
-            author: {
-              select: { id: true, name: true, avatar: true },
-            },
-          },
-        },
-        files: {
-          orderBy: { createdAt: 'desc' },
-          include: {
-            uploadedBy: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-        meetings: {
-          orderBy: { startTime: 'asc' },
-          include: {
-            attendees: {
-              include: {
-                user: {
-                  select: { id: true, name: true, email: true },
-                },
-              },
-            },
-          },
-        },
-        followUps: {
-          orderBy: { dueDate: 'asc' },
-          include: {
-            assignedTo: {
-              select: { id: true, name: true },
-            },
-          },
-        },
+        assignedTo: { select: { id: true, name: true, email: true, avatar: true } },
+        clients: { select: { id: true, name: true, email: true } },
       },
     });
-
-    if (!lead) {
-      throw new AppError('Lead not found', 404);
-    }
-
+    if (!lead) throw new AppError("Lead not found", 404);
     return response.success(res, lead);
-  } catch (error) {
-    next(error);
-  }
+  } catch (error) { next(error); }
 }
 
-/**
- * Create a new lead
- */
+/** Create a new lead. Only `name` is required. */
 export async function createLead(req, res, next) {
   try {
     const companyId = req.user.companyId;
-    const {
-      name,
-      email,
-      phone,
-      company,
-      jobTitle,
-      source,
-      status,
-      stageId,
-      assignedToId,
-      estimatedValue,
-      currency,
-      description,
-      website,
-      address,
-      city,
-      state,
-      country,
-      postalCode,
-    } = req.body;
-
-    // Get default stage if not provided
-    let finalStageId = stageId;
-    if (!finalStageId) {
-      const defaultStage = await prisma.pipelineStage.findFirst({
-        where: { companyId, isDefault: true },
-      });
-      if (defaultStage) {
-        finalStageId = defaultStage.id;
-      }
+    if (!req.body.name || !String(req.body.name).trim()) {
+      throw new AppError("Lead name is required", 400);
     }
-
-    const lead = await prisma.lead.create({
-      data: {
-        companyId,
-        name,
-        email,
-        phone,
-        company,
-        jobTitle,
-        source,
-        status: status || 'NEW',
-        stageId: finalStageId,
-        assignedToId: assignedToId || req.user.id,
-        estimatedValue: estimatedValue ? parseFloat(estimatedValue) : null,
-        currency: currency || 'USD',
-        description,
-        website,
-        address,
-        city,
-        state,
-        country,
-        postalCode,
-      },
-      include: {
-        stage: true,
-        assignedTo: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
-
-    return response.success(res, lead, 'Lead created successfully', 201);
-  } catch (error) {
-    next(error);
-  }
+    const data = buildLeadData({ ...req.body, companyId }, true);
+    data.assignedToId = req.body.assignedToId || req.user.id || null;
+    const lead = await prisma.lead.create({ data, select: leadListSelect });
+    return response.success(res, lead, "Lead created successfully", 201);
+  } catch (error) { next(error); }
 }
 
-/**
- * Update lead
- */
+/** Update an existing lead. */
 export async function updateLead(req, res, next) {
   try {
     const { id } = req.params;
     const companyId = req.user.companyId;
-    const {
-      name,
-      email,
-      phone,
-      company,
-      jobTitle,
-      source,
-      status,
-      stageId,
-      assignedToId,
-      estimatedValue,
-      currency,
-      description,
-      website,
-      address,
-      city,
-      state,
-      country,
-      postalCode,
-    } = req.body;
-
-    const lead = await prisma.lead.findFirst({
-      where: { id, companyId },
-    });
-
-    if (!lead) {
-      throw new AppError('Lead not found', 404);
-    }
-
-    const updatedLead = await prisma.lead.update({
-      where: { id },
-      data: {
-        name,
-        email,
-        phone,
-        company,
-        jobTitle,
-        source,
-        status,
-        stageId,
-        assignedToId,
-        estimatedValue: estimatedValue ? parseFloat(estimatedValue) : undefined,
-        currency,
-        description,
-        website,
-        address,
-        city,
-        state,
-        country,
-        postalCode,
-      },
-      include: {
-        stage: true,
-        assignedTo: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
-
-    return response.success(res, updatedLead, 'Lead updated successfully');
-  } catch (error) {
-    next(error);
-  }
+    const existing = await prisma.lead.findFirst({ where: { id, companyId } });
+    if (!existing) throw new AppError("Lead not found", 404);
+    const data = buildLeadData(req.body, false);
+    if (req.body.assignedToId !== undefined) data.assignedToId = req.body.assignedToId || null;
+    const lead = await prisma.lead.update({ where: { id }, data, select: leadListSelect });
+    return response.success(res, lead, "Lead updated successfully");
+  } catch (error) { next(error); }
 }
 
-/**
- * Delete lead
- */
+/** Delete a lead. */
 export async function deleteLead(req, res, next) {
   try {
     const { id } = req.params;
     const companyId = req.user.companyId;
-
-    const lead = await prisma.lead.findFirst({
-      where: { id, companyId },
-    });
-
-    if (!lead) {
-      throw new AppError('Lead not found', 404);
-    }
-
+    const lead = await prisma.lead.findFirst({ where: { id, companyId } });
+    if (!lead) throw new AppError("Lead not found", 404);
     await prisma.lead.delete({ where: { id } });
-
-    return response.success(res, null, 'Lead deleted successfully');
-  } catch (error) {
-    next(error);
-  }
+    return response.success(res, null, "Lead deleted successfully");
+  } catch (error) { next(error); }
 }
 
-/**
- * Convert lead to client
- */
+/** Convert a lead to a client. */
 export async function convertLeadToClient(req, res, next) {
   try {
     const { id } = req.params;
     const companyId = req.user.companyId;
-
-    const lead = await prisma.lead.findFirst({
-      where: { id, companyId },
-    });
-
-    if (!lead) {
-      throw new AppError('Lead not found', 404);
-    }
-
-    if (lead.status === 'CONVERTED') {
-      throw new AppError('Lead is already converted', 400);
-    }
-
-    // Create client from lead data
+    const lead = await prisma.lead.findFirst({ where: { id, companyId } });
+    if (!lead) throw new AppError("Lead not found", 404);
+    if (lead.convertedToClientId) throw new AppError("Lead has already been converted to a client", 400);
     const client = await prisma.client.create({
       data: {
         companyId,
-        name: lead.name,
+        name: [lead.firstName, lead.lastName].filter(Boolean).join(" ").trim() || "Converted Lead",
         email: lead.email,
         phone: lead.phone,
-        company: lead.company,
-        jobTitle: lead.jobTitle,
-        website: lead.website,
-        address: lead.address,
-        city: lead.city,
-        state: lead.state,
-        country: lead.country,
-        postalCode: lead.postalCode,
-        description: lead.description,
-        status: 'ACTIVE',
-        source: lead.source,
-        assignedToId: lead.assignedToId,
+        notes: lead.notes,
         leadId: lead.id,
+        isActive: true,
       },
     });
-
-    // Update lead status
-    await prisma.lead.update({
-      where: { id },
-      data: { status: 'CONVERTED', convertedAt: new Date() },
-    });
-
-    return response.success(res, client, 'Lead converted to client successfully', 201);
-  } catch (error) {
-    next(error);
-  }
+    await prisma.lead.update({ where: { id }, data: { convertedToClientId: client.id } });
+    return response.success(res, client, "Lead converted to client successfully", 201);
+  } catch (error) { next(error); }
 }

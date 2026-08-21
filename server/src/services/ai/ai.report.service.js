@@ -20,40 +20,125 @@ async function buildReportContext(companyId, type, params = {}) {
   const { entityId, startDate, endDate } = params;
 
   switch (type) {
-    case "PROJECT": {
-      const project = await prisma.project.findFirst({
-        where: { id: entityId, companyId },
-        include: {
-          client: true,
-          tasks: true,
-          milestones: true,
-          sites: true,
-        },
+        case "PROJECT": {
+      // When a specific entity is requested, look it up (404 if it really doesn't exist).
+      if (entityId) {
+        const project = await prisma.project.findFirst({
+          where: { id: entityId, companyId },
+          include: {
+            client: true,
+            tasks: true,
+            milestones: true,
+            sites: true,
+          },
+        });
+        if (!project) throw new AppError("Project not found", 404);
+        return {
+          type: "PROJECT",
+          project: {
+            name: project.name,
+            code: project.code,
+            status: project.status,
+            priority: project.priority,
+            progress: project.progress,
+            budget: project.budget?.toString(),
+            actualCost: project.actualCost?.toString(),
+            startDate: project.startDate,
+            endDate: project.endDate,
+            client: project.client?.name,
+            taskCount: project.tasks.length,
+            completedTasks: project.tasks.filter((t) => t.status === "DONE").length,
+            milestones: project.milestones,
+          },
+        };
+      }
+
+      // No specific entity requested — build a company-wide project summary
+      // (consistent with FINANCE/HR/INVENTORY/SALES) so a report can always be
+      // generated, even for companies with no projects yet.
+      const projects = await prisma.project.findMany({
+        where: { companyId },
+        include: { client: true, tasks: true, milestones: true, sites: true },
       });
-      if (!project) throw new AppError("Project not found", 404);
+
+      const totalBudget = projects.reduce((sum, p) => sum + (p.budget ? parseFloat(p.budget) : 0), 0);
+      const totalActualCost = projects.reduce(
+        (sum, p) => sum + (p.actualCost ? parseFloat(p.actualCost) : 0),
+        0
+      );
+      const activeProjects = projects.filter(
+        (p) => p.status === "ACTIVE" || p.status === "IN_PROGRESS"
+      ).length;
+
       return {
         type: "PROJECT",
-        project: {
-          name: project.name,
-          code: project.code,
-          status: project.status,
-          priority: project.priority,
-          progress: project.progress,
-          budget: project.budget?.toString(),
-          actualCost: project.actualCost?.toString(),
-          startDate: project.startDate,
-          endDate: project.endDate,
-          client: project.client?.name,
-          taskCount: project.tasks.length,
-          completedTasks: project.tasks.filter((t) => t.status === "DONE").length,
-          milestones: project.milestones,
+        context: "company-wide project summary (no specific project selected)",
+        summary: {
+          totalProjects: projects.length,
+          activeProjects,
+          completedProjects: projects.filter((p) => p.status === "DONE").length,
+          totalBudget: totalBudget.toString(),
+          totalActualCost: totalActualCost.toString(),
+          overallProgress:
+            projects.length > 0
+              ? Math.round(projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length)
+              : 0,
         },
+        projects: projects.map((p) => ({
+          name: p.name,
+          code: p.code,
+          status: p.status,
+          priority: p.priority,
+          progress: p.progress,
+          budget: p.budget?.toString(),
+          actualCost: p.actualCost?.toString(),
+          startDate: p.startDate,
+          endDate: p.endDate,
+          client: p.client?.name,
+          taskCount: p.tasks.length,
+          completedTasks: p.tasks.filter((t) => t.status === "DONE").length,
+          milestones: p.milestones,
+        })),
       };
     }
 
-    case "SITE": {
-      const site = await prisma.site.findFirst({
-        where: { id: entityId, companyId },
+        case "SITE": {
+      // When a specific entity is requested, look it up (404 if it really doesn't exist).
+      if (entityId) {
+        const site = await prisma.site.findFirst({
+          where: { id: entityId, companyId },
+          include: {
+            progressEntries: true,
+            materials: true,
+            attendance: true,
+            expenses: true,
+            issues: true,
+            reports: true,
+          },
+        });
+        if (!site) throw new AppError("Site not found", 404);
+        return {
+          type: "SITE",
+          site: {
+            name: site.name,
+            code: site.code,
+            status: site.status,
+            progress: site.progressEntries[site.progressEntries.length - 1]?.progress || 0,
+            totalExpenses: site.expenses.reduce((sum, e) => sum + e.amount, 0),
+            openIssues:
+              site.issues.filter(
+                (i) => i.status === "OPEN" || i.status === "IN_PROGRESS"
+              ).length,
+            materials: site.materials,
+            attendance: site.attendance,
+            reports: site.reports,
+          },
+        };
+      }
+
+      // No specific entity requested — build a company-wide site summary.
+      const sites = await prisma.site.findMany({
+        where: { companyId },
         include: {
           progressEntries: true,
           materials: true,
@@ -63,20 +148,42 @@ async function buildReportContext(companyId, type, params = {}) {
           reports: true,
         },
       });
-      if (!site) throw new AppError("Site not found", 404);
+
       return {
         type: "SITE",
-        site: {
-          name: site.name,
-          code: site.code,
-          status: site.status,
-          progress: site.progressEntries[site.progressEntries.length - 1]?.progress || 0,
-          totalExpenses: site.expenses.reduce((sum, e) => sum + e.amount, 0),
-          openIssues: site.issues.filter((i) => i.status === "OPEN" || i.status === "IN_PROGRESS").length,
-          materials: site.materials,
-          attendance: site.attendance,
-          reports: site.reports,
+        context: "company-wide site summary (no specific site selected)",
+        summary: {
+          totalSites: sites.length,
+          activeSites: sites.filter(
+            (s) => s.status === "ACTIVE" || s.status === "IN_PROGRESS"
+          ).length,
+          totalExpenses: sites.reduce(
+            (sum, s) => sum + s.expenses.reduce((e2, e) => e2 + e.amount, 0),
+            0
+          ),
+          totalIssues: sites.reduce((sum, s) => sum + s.issues.length, 0),
+          openIssues: sites.reduce(
+            (sum, s) =>
+              sum +
+              s.issues.filter(
+                (i) => i.status === "OPEN" || i.status === "IN_PROGRESS"
+              ).length,
+            0
+          ),
         },
+        sites: sites.map((s) => ({
+          name: s.name,
+          code: s.code,
+          status: s.status,
+          progress: s.progressEntries[s.progressEntries.length - 1]?.progress || 0,
+          totalExpenses: s.expenses.reduce((sum, e) => sum + e.amount, 0),
+          openIssues: s.issues.filter(
+            (i) => i.status === "OPEN" || i.status === "IN_PROGRESS"
+          ).length,
+          materialCount: s.materials.length,
+          attendanceCount: s.attendance.length,
+          issueCount: s.issues.length,
+        })),
       };
     }
 

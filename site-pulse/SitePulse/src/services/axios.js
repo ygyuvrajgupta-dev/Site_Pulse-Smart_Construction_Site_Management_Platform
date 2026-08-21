@@ -31,6 +31,17 @@ apiClient.interceptors.request.use(
         // Invalid user data in localStorage
       }
     }
+
+    // Normalize API base path.
+    // Feature pages call absolute paths like "/api/v1/crm/leads", while services
+    // call relative paths like "/ai/status". The Axios baseURL already includes
+    // "/api/v1", so an absolute "/api/v1/..." path would double the prefix to
+    // "/api/v1/api/v1/...". Strip the leading "/api/v1" when present so every
+    // configured route resolves to the correct backend endpoint.
+    if (typeof config.url === 'string' && config.url.startsWith('/api/v1/')) {
+      config.url = config.url.replace(/^\/api\/v1(?=\/)/, '');
+    }
+
     return config;
   },
   (error) => {
